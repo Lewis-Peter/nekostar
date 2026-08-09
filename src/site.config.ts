@@ -21,7 +21,7 @@ export const SITE = {
    * 建议 1200×630 的 PNG/JPG（各平台基本不支持 SVG）。
    * 为 null 时只输出 summary 卡片，不会输出坏图链接。
    */
-  ogImage: null as string | null
+  ogImage: '/og.jpg' as string | null
 };
 
 export const LINKS: Record<string, string | null> = {
