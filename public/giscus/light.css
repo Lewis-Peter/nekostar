@@ -1,0 +1,147 @@
+/*! MIT License
+ * Copyright (c) 2018 GitHub Inc.
+ * https://github.com/primer/primitives/blob/main/LICENSE
+ *
+ * 变量清单以 giscus 官方 light.css 为基底，避免未覆盖的 Primer 默认色漏出。
+ */
+
+main {
+  --paper: #f5f2ed;
+  --paper-dark: #ede8e1;
+  --ink: #1c1a18;
+  --ink-light: #6b6560;
+  --ink-faint: #b0aaa3;
+  --vermilion: #c0392b;
+  /* 原朱红放在 paper-dark 上只有 4.46:1；文字色轻微压暗后达到 4.52:1。 */
+  --vermilion-text: #bf382a;
+  --primary-text: var(--paper);
+
+  --color-prettylights-syntax-comment: var(--ink-light);
+  --color-prettylights-syntax-constant: var(--vermilion-text);
+  --color-prettylights-syntax-entity: var(--vermilion-text);
+  --color-prettylights-syntax-storage-modifier-import: var(--ink);
+  --color-prettylights-syntax-entity-tag: var(--vermilion-text);
+  --color-prettylights-syntax-keyword: var(--vermilion-text);
+  --color-prettylights-syntax-string: var(--ink);
+  --color-prettylights-syntax-variable: var(--vermilion-text);
+  --color-prettylights-syntax-brackethighlighter-unmatched: var(--vermilion-text);
+  --color-prettylights-syntax-invalid-illegal-text: var(--primary-text);
+  --color-prettylights-syntax-invalid-illegal-bg: var(--vermilion);
+  --color-prettylights-syntax-carriage-return-text: var(--primary-text);
+  --color-prettylights-syntax-carriage-return-bg: var(--vermilion);
+  --color-prettylights-syntax-string-regexp: var(--vermilion-text);
+  --color-prettylights-syntax-markup-list: var(--ink);
+  --color-prettylights-syntax-markup-heading: var(--vermilion-text);
+  --color-prettylights-syntax-markup-italic: var(--ink);
+  --color-prettylights-syntax-markup-bold: var(--ink);
+  --color-prettylights-syntax-markup-deleted-text: var(--ink);
+  --color-prettylights-syntax-markup-deleted-bg: var(--paper-dark);
+  --color-prettylights-syntax-markup-inserted-text: var(--ink);
+  --color-prettylights-syntax-markup-inserted-bg: var(--paper-dark);
+  --color-prettylights-syntax-markup-changed-text: var(--ink);
+  --color-prettylights-syntax-markup-changed-bg: var(--paper-dark);
+  --color-prettylights-syntax-markup-ignored-text: var(--primary-text);
+  --color-prettylights-syntax-markup-ignored-bg: var(--vermilion);
+  --color-prettylights-syntax-meta-diff-range: var(--vermilion-text);
+  --color-prettylights-syntax-brackethighlighter-angle: var(--ink-light);
+  --color-prettylights-syntax-sublimelinter-gutter-mark: var(--ink-light);
+  --color-prettylights-syntax-constant-other-reference-link: var(--vermilion-text);
+  --color-btn-text: var(--ink);
+  --color-btn-bg: var(--paper-dark);
+  --color-btn-border: var(--ink-faint);
+  --color-btn-shadow: none;
+  --color-btn-inset-shadow: none;
+  --color-btn-hover-bg: var(--paper-dark);
+  --color-btn-hover-border: var(--ink-faint);
+  --color-btn-active-bg: var(--paper-dark);
+  --color-btn-active-border: var(--ink-faint);
+  --color-btn-selected-bg: var(--paper-dark);
+  --color-btn-primary-text: var(--primary-text);
+  --color-btn-primary-bg: var(--vermilion);
+  --color-btn-primary-border: var(--ink-faint);
+  --color-btn-primary-shadow: none;
+  --color-btn-primary-inset-shadow: none;
+  --color-btn-primary-hover-bg: var(--vermilion-text);
+  --color-btn-primary-hover-border: var(--ink-faint);
+  --color-btn-primary-selected-bg: var(--vermilion-text);
+  --color-btn-primary-selected-shadow: none;
+  --color-btn-primary-disabled-text: var(--primary-text);
+  --color-btn-primary-disabled-bg: var(--vermilion);
+  --color-btn-primary-disabled-border: var(--ink-faint);
+  --color-action-list-item-default-hover-bg: var(--paper-dark);
+  --color-segmented-control-bg: var(--paper-dark);
+  --color-segmented-control-button-bg: var(--paper);
+  --color-segmented-control-button-selected-border: var(--ink-faint);
+  --color-fg-default: var(--ink);
+  --color-fg-muted: var(--ink-light);
+  --color-fg-subtle: var(--ink-light);
+  --color-canvas-default: var(--paper);
+  --color-canvas-overlay: var(--paper);
+  --color-canvas-inset: var(--paper-dark);
+  --color-canvas-subtle: var(--paper-dark);
+  --color-border-default: var(--ink-faint);
+  --color-border-muted: var(--ink-faint);
+  --color-neutral-muted: var(--paper-dark);
+  --color-accent-fg: var(--vermilion-text);
+  --color-accent-emphasis: var(--ink-faint);
+  --color-accent-muted: var(--ink-faint);
+  --color-accent-subtle: var(--paper-dark);
+  --color-success-fg: var(--vermilion-text);
+  --color-attention-fg: var(--vermilion-text);
+  --color-attention-muted: var(--ink-faint);
+  --color-attention-subtle: var(--paper-dark);
+  --color-danger-fg: var(--vermilion-text);
+  --color-danger-muted: var(--ink-faint);
+  --color-danger-subtle: var(--paper-dark);
+  --color-primer-shadow-inset: none;
+  --color-scale-gray-1: var(--paper-dark);
+  --color-scale-blue-1: var(--paper-dark);
+  --color-social-reaction-bg-hover: var(--paper-dark);
+  --color-social-reaction-bg-reacted-hover: var(--paper-dark);
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+}
+
+main,
+main *,
+main *::before,
+main *::after {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+main code,
+main kbd,
+main pre,
+main samp,
+main .gsc-is-fixed-width,
+main .commit-tease-sha,
+main .blob-code-inner,
+main .blob-num {
+  font-family: "JetBrains Mono", Consolas, Menlo, monospace;
+}
+
+main .form-control,
+main .form-control:focus,
+main .gsc-comment-box-textarea {
+  background-color: var(--paper-dark);
+}
+
+main .form-control:focus,
+main .gsc-comment-box-write:focus-within {
+  border-color: var(--ink-faint);
+}
+
+main .flash-error,
+main .flash-warn {
+  background-color: var(--paper-dark);
+  background-image: none;
+}
+
+main .pagination-loader-container {
+  background-image: url("https://github.com/images/modules/pulls/progressive-disclosure-line.svg");
+}
+
+main .gsc-loading-image {
+  background-image: url("https://github.githubassets.com/images/mona-loading-default.gif");
+}

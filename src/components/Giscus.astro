@@ -1,11 +1,11 @@
 ---
-import { GISCUS } from '../site.config';
+import { GISCUS, GISCUS_THEME_URLS, giscusThemeUrl } from '../site.config';
 
 // 四项缺一不可，少任何一项 giscus 都会拿到无效配置
 const configured = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.category && GISCUS.categoryId);
 ---
 
-<section class="comments" aria-labelledby="comments-title">
+<section class="comments" aria-labelledby="comments-title" data-giscus-theme-urls={JSON.stringify(GISCUS_THEME_URLS)}>
   <h2 id="comments-title" data-i18n data-zh="讨论" data-en="Discussion">讨论</h2>
   <p class="comments__hint" data-i18n data-zh="欢迎补充、勘误或分享你的实践经验。" data-en="Corrections, additions, and field notes are always welcome.">欢迎补充、勘误或分享你的实践经验。</p>
   {configured && (
@@ -21,7 +21,7 @@ const configured = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.category && GI
     data-reactions-enabled="1"
     data-emit-metadata="0"
     data-input-position="top"
-    data-theme="preferred_color_scheme"
+    data-theme={giscusThemeUrl('system')}
     data-lang="zh-CN"
     data-loading="lazy"
     crossorigin="anonymous"
@@ -56,10 +56,18 @@ const configured = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.category && GI
         else queue.push(config);
       };
 
+      // 主题地址从自己的 data 属性读，不依赖 SiteControls 挂的全局函数：
+      // 那段脚本在拿不到控件按钮时会提前 return，定义全局的语句在 return 之后，
+      // 页眉结构一改这里就会静默失效。两边各读各的构建期配置，互不牵连。
+      const themeUrls = JSON.parse(section.dataset.giscusThemeUrls);
+      const themeUrl = (theme) => themeUrls[theme] ?? themeUrls.system;
+
       const root = document.documentElement;
+      // 自定义主题由 giscus 的 iframe 从公网 HTTPS 地址加载；astro dev 的 localhost
+      // 对它不可达，因而本地评论区退回无主题样式是预期行为。
       window.__giscusSetConfig({
         lang: root.dataset.lang === 'en' ? 'en' : 'zh-CN',
-        theme: root.dataset.theme || 'preferred_color_scheme'
+        theme: themeUrl(root.dataset.theme)
       });
     })();
   </script>

@@ -1,0 +1,27 @@
+/* 先复用完整的浅色 Primer 变量清单，再只在系统深色时替换设计令牌；
+   变量引用会随令牌一起重算，因此不会漏回 GitHub 默认色。 */
+@import url("./light.css");
+
+@media (prefers-color-scheme: dark) {
+  main {
+    --paper: #1a1814;
+    --paper-dark: #211f1b;
+    --ink: #e8e4de;
+    --ink-light: #9a9188;
+    --ink-faint: #4a4540;
+    --vermilion: #dd6450;
+    --vermilion-text: var(--vermilion);
+    /* 白字在暗色朱红上只有 3.49:1，按钮改用深 paper 作文字。 */
+    --primary-text: var(--paper);
+    --color-btn-primary-hover-bg: var(--vermilion);
+    --color-btn-primary-selected-bg: var(--vermilion);
+  }
+
+  main .pagination-loader-container {
+    background-image: url("https://github.com/images/modules/pulls/progressive-disclosure-line-dark.svg");
+  }
+
+  main .gsc-loading-image {
+    background-image: url("https://github.githubassets.com/images/mona-loading-dark.gif");
+  }
+}

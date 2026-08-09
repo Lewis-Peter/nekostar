@@ -1,4 +1,8 @@
-<div class="site-controls" role="group" aria-label="显示偏好">
+---
+import { GISCUS_THEME_URLS } from '../site.config';
+---
+
+<div class="site-controls" role="group" aria-label="显示偏好" data-giscus-theme-urls={JSON.stringify(GISCUS_THEME_URLS)}>
   <button class="preference-control" type="button" data-theme-toggle aria-label="颜色模式：跟随系统" title="颜色模式：跟随系统">
     <span class="preference-control__icon" data-theme-icon aria-hidden="true">◐</span>
     <span data-theme-label>自动</span>
@@ -43,6 +47,9 @@
 
     const readLanguage = () => root.dataset.lang === 'en' ? 'en' : 'zh';
 
+    const themeUrls = JSON.parse(themeButton.closest('.site-controls').dataset.giscusThemeUrls);
+    const giscusThemeUrl = (theme) => themeUrls[theme] ?? themeUrls.system;
+
     // 由 Giscus.astro 提供，内部会处理 iframe 尚未就绪时的排队。
     // 非文章页没有评论区，此时函数不存在，直接跳过。
     const updateGiscus = (settings) => window.__giscusSetConfig?.(settings);
@@ -63,7 +70,7 @@
       if (text) text.textContent = label;
       themeButton.setAttribute('aria-label', accessibleLabel);
       themeButton.title = accessibleLabel;
-      updateGiscus({ theme: theme === 'system' ? 'preferred_color_scheme' : theme });
+      updateGiscus({ theme: giscusThemeUrl(theme) });
     };
 
     const applyLanguage = (language, persist = true) => {

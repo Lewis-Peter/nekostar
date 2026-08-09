@@ -24,6 +24,16 @@ export const SITE = {
   ogImage: '/og.jpg' as string | null
 };
 
+export const GISCUS_THEME_URLS = {
+  system: `${SITE.origin}/giscus/auto.css`,
+  light: `${SITE.origin}/giscus/light.css`,
+  dark: `${SITE.origin}/giscus/dark.css`
+} as const;
+
+export function giscusThemeUrl(theme?: string) {
+  return GISCUS_THEME_URLS[theme as keyof typeof GISCUS_THEME_URLS] ?? GISCUS_THEME_URLS.system;
+}
+
 export const LINKS: Record<string, string | null> = {
   github: 'https://github.com/Lewis-Peter',
   email: 'whitelewi1@gmail.com'
