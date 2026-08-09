@@ -31,10 +31,12 @@ export const LINKS: Record<string, string | null> = {
 
 /** 留空则文章页不加载 giscus，只显示一行说明，不会在控制台报错 */
 export const GISCUS: Record<string, string | null> = {
-  repo: null,
-  repoId: null,
+  repo: 'Lewis-Peter/nekostar',
+  repoId: 'R_kgDOTzF8rg',
+  // Announcements：只有仓库维护者能开新帖，读者只能在文章对应的帖子下回复，
+  // 不会有人凭空建一堆无关讨论。
   category: 'Announcements',
-  categoryId: null
+  categoryId: 'DIC_kwDOTzF8rs4DC_f-'
 };
 
 /**
