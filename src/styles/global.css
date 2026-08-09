@@ -1,3 +1,5 @@
+@import './fonts.css';
+
 /* =========================================================================
    nekostar — 全站视觉系统
    和纸版式：纸色底、衬线细体标题、栏线分栏、等宽小字做标注、朱红只作强调。
@@ -22,7 +24,7 @@
   --radius: 2px;
   --texture-opacity: 0.22;
 
-  /* sans 使用系统字体栈，不走网络；serif 和 mono 必须和 BaseLayout 里实际加载的字体保持一致 */
+  /* sans 使用系统字体栈，不走网络；serif 和 mono 由 fonts.css 从本站加载 */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
   --font-serif: "Noto Serif SC", ui-serif, Georgia, "Songti SC", "SimSun", serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;

@@ -68,12 +68,23 @@ apiNote: false
 
 每个页面都会输出 canonical、Open Graph 和 Twitter Card。文章页额外带 `og:type=article`、发布时间和标签。
 
+## 字体
+
+站点自托管以下字体，字体文件与页面通过同一域名分发，不依赖 Google Fonts 的运行时请求：
+
+- [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)：400 字重，仅保留 latin 分片。
+- [Noto Serif SC](https://fonts.google.com/noto/specimen/Noto+Serif+SC)：300、400 字重；`astro build` 后扫描 `dist/**/*.html`，按实际使用衬线体的字符生成精确子集。
+
+两款字体均采用 [SIL Open Font License 1.1](https://openfontlicense.org/)。随字体分发的许可证分别位于 `public/fonts/jetbrains-mono/OFL.txt` 和 `public/fonts/noto-serif-sc/OFL.txt`；自托管的 `@font-face` 声明位于 `src/styles/fonts.css`。
+
+精确子集由 `scripts/subset-serif-font.mjs` 在构建期通过 Google Fonts CSS2 `text=` 参数更新，浏览器运行时只访问本站。字符清单及当前文件名保存在 `scripts/noto-serif-sc-subset.json`；字符未变化时不发网络请求。字体文件名带内容哈希；子集变化时，脚本也会给后处理过的 Astro CSS 换上新的内容哈希并更新 HTML 引用，避免浏览器或 CDN 的旧缓存遮住新增字符。网络更新失败不会中断构建：脚本会保留上一版字体并醒目警告，此时新增字符会暂时回退到系统衬线体。
+
 ## 部署
 
 站点托管在 Cloudflare Pages（项目名 `nekostar`），走 Direct Upload。
 
 ```bash
-pnpm deploy    # astro check && astro build && wrangler pages deploy
+pnpm deploy    # pnpm build && wrangler pages deploy
 ```
 
 需要环境变量：
