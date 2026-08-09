@@ -26,7 +26,7 @@ export const SITE = {
 
 export const LINKS: Record<string, string | null> = {
   github: 'https://github.com/Lewis-Peter',
-  email: null
+  email: 'whitelewi1@gmail.com'
 };
 
 /** 留空则文章页不加载 giscus，只显示一行说明，不会在控制台报错 */
