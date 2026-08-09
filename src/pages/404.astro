@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="页面不存在" description="没有找到这个页面。">
+  <div class="shell listing-page not-found">
+    <p class="eyebrow">404</p>
+    <h1 data-i18n data-zh="这里什么都没有" data-en="Nothing here">这里什么都没有</h1>
+    <p data-i18n data-zh="链接可能拼错了，或者这篇内容还没写出来。" data-en="The link may be wrong, or this page has not been written yet.">链接可能拼错了，或者这篇内容还没写出来。</p>
+    <div class="not-found__links">
+      <a href="/" data-i18n data-zh="← 回首页" data-en="← Home">← 回首页</a>
+      <a href="/posts/" data-i18n data-zh="全部文章" data-en="All posts">全部文章</a>
+    </div>
+  </div>
+</BaseLayout>

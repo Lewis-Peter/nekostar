@@ -1,0 +1,54 @@
+---
+import { GISCUS } from '../site.config';
+
+// 四项缺一不可，少任何一项 giscus 都会拿到无效配置
+const configured = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.category && GISCUS.categoryId);
+---
+
+<section class="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title" data-i18n data-zh="讨论" data-en="Discussion">讨论</h2>
+  <p class="comments__hint" data-i18n data-zh="欢迎补充、勘误或分享你的实践经验。" data-en="Corrections, additions, and field notes are always welcome.">欢迎补充、勘误或分享你的实践经验。</p>
+  {configured && (
+  <script
+    is:inline
+    src="https://giscus.app/client.js"
+    data-repo={GISCUS.repo}
+    data-repo-id={GISCUS.repoId}
+    data-category={GISCUS.category}
+    data-category-id={GISCUS.categoryId}
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async
+  ></script>
+  <script is:inline>
+    (() => {
+      const section = document.currentScript?.closest('.comments');
+      if (!section) return;
+      const sync = () => {
+        const frame = section.querySelector('iframe.giscus-frame');
+        if (!(frame instanceof HTMLIFrameElement)) return false;
+        const root = document.documentElement;
+        const language = root.dataset.lang === 'en' ? 'en' : 'zh-CN';
+        const theme = root.dataset.theme || 'preferred_color_scheme';
+        frame.contentWindow?.postMessage({ giscus: { setConfig: { lang: language, theme } } }, 'https://giscus.app');
+        return true;
+      };
+      if (sync()) return;
+      const observer = new MutationObserver(() => {
+        if (sync()) observer.disconnect();
+      });
+      observer.observe(section, { childList: true, subtree: true });
+    })();
+  </script>
+  )}
+  {!configured && (
+    <p class="comments__pending" data-pending data-i18n data-zh="评论区还没配置（见 src/site.config.ts 的 GISCUS）。" data-en="Comments are not configured yet (see GISCUS in src/site.config.ts).">评论区还没配置（见 src/site.config.ts 的 GISCUS）。</p>
+  )}
+</section>

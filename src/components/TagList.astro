@@ -1,0 +1,13 @@
+---
+interface Props {
+  tags: string[];
+}
+
+const { tags } = Astro.props;
+---
+
+<ul class="tag-list" aria-label="文章标签">
+  {tags.map((tag) => (
+    <li><a href={`/tags/${encodeURIComponent(tag)}/`}>{tag}</a></li>
+  ))}
+</ul>

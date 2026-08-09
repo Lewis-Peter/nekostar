@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { byNewest, formatMonthDay, type Post } from '../../lib/posts';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(byNewest);
+
+const byYear = new Map<number, Post[]>();
+for (const post of posts) {
+  const year = post.data.date.getFullYear();
+  byYear.set(year, [...(byYear.get(year) ?? []), post]);
+}
+const years = [...byYear].sort((a, b) => b[0] - a[0]);
+---
+
+<BaseLayout title="全部文章" description="站内全部文章按时间归档。">
+  <div class="shell listing-page">
+    <a class="back-link" href="/">← <span data-i18n data-zh="返回首页" data-en="Back home">返回首页</span></a>
+    <div class="section-heading listing-page__heading">
+      <h1 data-i18n data-zh="全部文章" data-en="All posts">全部文章</h1>
+      <span>{posts.length} <span data-i18n data-zh="篇" data-en={posts.length === 1 ? 'post' : 'posts'}>篇</span></span>
+    </div>
+    {years.map(([year, items]) => (
+      <section class="archive-year" aria-label={`${year}`}>
+        <h2 class="archive-year__label">{year}</h2>
+        <ol class="archive-list">
+          {items.map((post) => (
+            <li>
+              <a href={`/posts/${post.id}/`}>
+                <time class="archive-list__date" datetime={post.data.date.toISOString()}>{formatMonthDay(post.data.date)}</time>
+                <span class="archive-list__title">{post.data.title}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+  </div>
+</BaseLayout>

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { API_SERVICE } from '../site.config';
+
+// 这一页只负责"告诉你它存在"。价格、模型列表、接入文档都在服务站上，不在这里重复。
+const site = API_SERVICE.site;
+---
+
+<BaseLayout title="AI API" description="我自己维护的一个 OpenAI 兼容 API 中转。">
+  <div class="shell listing-page tool-page">
+    <p class="eyebrow">AI API</p>
+    <h1 data-i18n data-zh="我在跑一个 API 中转" data-en="I run an API relay">我在跑一个 API 中转</h1>
+
+    <div class="prose">
+      <p data-i18n data-zh="写这些文章的时候我经常要调 AI API。国内直连、按量计费、保持 OpenAI 兼容格式——我自己需要这么一个东西，就顺手做了，也开放给别人用。" data-en="I call AI APIs constantly while writing these posts. I wanted one that works from China, bills by usage, and stays OpenAI-compatible—so I built it, and opened it up.">写这些文章的时候我经常要调 AI API。国内直连、按量计费、保持 OpenAI 兼容格式——我自己需要这么一个东西，就顺手做了，也开放给别人用。</p>
+      <p data-i18n data-zh="价格、模型列表和接入文档都在服务站上，这里不重复一遍。这一页只是告诉你它存在，以及它是我做的。" data-en="Pricing, the model list, and the docs all live on the service site—no point duplicating them here. This page just tells you it exists, and that it is mine.">价格、模型列表和接入文档都在服务站上，这里不重复一遍。这一页只是告诉你它存在，以及它是我做的。</p>
+    </div>
+
+    {site
+      ? <p class="tool-page__out"><a class="button button--primary" href={site} rel="noopener">herosub2.moira-e.com <span aria-hidden="true">↗</span></a></p>
+      : <p class="tool-page__out" data-pending data-i18n data-zh="服务站还在收尾，地址填进 src/site.config.ts 的 API_SERVICE.site 后这里会出现出口链接。" data-en="The service site is still being finished. Fill API_SERVICE.site in src/site.config.ts and the link will appear here.">服务站还在收尾，地址填进 src/site.config.ts 的 API_SERVICE.site 后这里会出现出口链接。</p>}
+
+    <div class="tool-page__notes">
+      <p>
+        <span class="tool-page__label" data-i18n data-zh="利益相关" data-en="DISCLOSURE">利益相关</span>
+        <span data-i18n data-zh="这是我自己运营的服务，你从这里过去注册，我是有收益的。" data-en="I operate this service. If you sign up through this link, I make money from it.">这是我自己运营的服务，你从这里过去注册，我是有收益的。</span>
+      </p>
+      <p>
+        <span class="tool-page__label" data-i18n data-zh="已知限制" data-en="KNOWN LIMITS">已知限制</span>
+        <span data-i18n data-zh="一个人在维护，不提供 SLA，也不保证长期可用。出问题直接来找我，别指望工单系统。" data-en="Maintained by one person. No SLA, no promise it stays up forever. If something breaks, come find me—there is no ticket system.">一个人在维护，不提供 SLA，也不保证长期可用。出问题直接来找我，别指望工单系统。</span>
+      </p>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// url 为 null 表示还没有可以指向的仓库或详情页，卡片会渲染成不可点的说明文字。
+const projects = [
+  {
+    url: null,
+    name: 'Cardputer Chat',
+    type: '嵌入式 / AI',
+    typeEn: 'Embedded / AI',
+    description: '运行在 M5Stack Cardputer 上的口袋 AI 终端，通过 OpenAI 兼容接口完成流式对话。',
+    descriptionEn: 'A pocket AI terminal for M5Stack Cardputer with streaming conversations through an OpenAI-compatible API.',
+    status: '开发中',
+    statusEn: 'In progress'
+  },
+  {
+    url: null,
+    name: 'DroneStitch',
+    type: '计算机视觉',
+    typeEn: 'Computer Vision',
+    description: '面向无人机航拍素材的轻量图像拼接工具，探索低成本测绘与现场快速预览。',
+    descriptionEn: 'A lightweight image stitcher for drone footage, exploring low-cost mapping and rapid field previews.',
+    status: '实验项目',
+    statusEn: 'Experiment'
+  },
+  {
+    url: null,
+    name: 'Linux 内核补丁',
+    nameEn: 'Linux Kernel Patches',
+    type: 'Kernel / Security',
+    typeEn: 'Kernel / Security',
+    description: '驱动、性能和安全方向的内核补丁与研究记录；后续补充上游链接和技术说明。',
+    descriptionEn: 'Kernel patches and research notes on drivers, performance, and security, with upstream links to follow.',
+    status: '持续更新',
+    statusEn: 'Ongoing'
+  }
+];
+---
+
+<BaseLayout title="项目" description="硬件、安全和 Linux 内核相关项目。">
+  <div class="shell page-intro">
+    <p class="eyebrow">PROJECTS</p>
+    <h1 data-i18n data-zh="做过的东西" data-en="Things I have built">做过的东西</h1>
+    <p data-i18n data-zh="一些从想法走到可运行代码的项目。这里目前是骨架，后续会补充仓库、演示和完整复盘。" data-en="Projects that made it from an idea to running code. Repositories, demos, and full retrospectives will be added here.">一些从想法走到可运行代码的项目。这里目前是骨架，后续会补充仓库、演示和完整复盘。</p>
+  </div>
+  <section class="shell project-grid" aria-label="项目列表">
+    {projects.map((project) => (
+      <article class="project-card">
+        <div class="project-card__top">
+          <span class="status-badge" data-i18n data-zh={project.status} data-en={project.statusEn}>{project.status}</span>
+        </div>
+        <p class="project-card__type" data-i18n data-zh={project.type} data-en={project.typeEn}>{project.type}</p>
+        <h2 data-i18n data-zh={project.name} data-en={project.nameEn ?? project.name}>{project.name}</h2>
+        <p data-i18n data-zh={project.description} data-en={project.descriptionEn}>{project.description}</p>
+        {project.url ? (
+          <a href={project.url} aria-label={`查看 ${project.name} 项目`}><span data-i18n data-zh="项目详情" data-en="Project details">项目详情</span> <span aria-hidden="true">↗</span></a>
+        ) : (
+          <span class="project-card__pending" data-pending data-i18n data-zh="项目详情（待补充）" data-en="Project details (coming soon)">项目详情（待补充）</span>
+        )}
+      </article>
+    ))}
+  </section>
+</BaseLayout>

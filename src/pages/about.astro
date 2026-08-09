@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, LINKS } from '../site.config';
+
+const contacts = [
+  { label: 'GitHub', href: LINKS.github },
+  { label: 'Email', href: LINKS.email ? `mailto:${LINKS.email}` : null }
+].filter((item) => item.href !== null);
+---
+
+<BaseLayout title="关于" description="关于本站作者与这份技术笔记。">
+  <div class="shell about-page">
+    <section class="about-main">
+      <p class="eyebrow">ABOUT</p>
+      <h1 data-i18n data-zh="你好，我是 Lewis。" data-en="Hi, I am Lewis.">你好，我是 Lewis。</h1>
+      <p class="about-lead" data-i18n data-zh="一名关注硬件、安全与 Linux 内核的研究者，也喜欢把 AI 工具装进各种不太常见的设备里。" data-en="A researcher focused on hardware, security, and the Linux kernel—with a habit of putting AI tools on unusual devices.">一名关注硬件、安全与 Linux 内核的研究者，也喜欢把 AI 工具装进各种不太常见的设备里。</p>
+      <div class="prose">
+        <h2 data-i18n data-zh="关于这间数字工作室" data-en="About this digital workshop">关于这间数字工作室</h2>
+        <p data-i18n data-zh="这个博客用来记录完整的技术过程：为什么做、怎样实现、哪里失败，以及最终有哪些可以复用的结论。比起只给答案，我更希望留下推导答案的路径。" data-en="This blog records the full technical process: why a project exists, how it works, where it failed, and what can be reused. The path to an answer matters as much as the answer itself.">这个博客用来记录完整的技术过程：为什么做、怎样实现、哪里失败，以及最终有哪些可以复用的结论。比起只给答案，我更希望留下推导答案的路径。</p>
+        <p data-i18n data-zh="这里目前是项目骨架。后续可以补充个人经历、研究方向、公开演讲、联系方式和常用设备等内容。" data-en="This is currently a scaffold. Background, research interests, talks, contact details, and everyday gear can be added later.">这里目前是项目骨架。后续可以补充个人经历、研究方向、公开演讲、联系方式和常用设备等内容。</p>
+        <h2 data-i18n data-zh="联系我" data-en="Contact">联系我</h2>
+        <p data-i18n data-zh="欢迎讨论嵌入式开发、内核、安全研究或项目合作。请在这里替换为你的邮箱和社交账号。" data-en="Get in touch about embedded development, kernels, security research, or project collaboration. Replace this placeholder with your email and social profiles.">欢迎讨论嵌入式开发、内核、安全研究或项目合作。请在这里替换为你的邮箱和社交账号。</p>
+      </div>
+    </section>
+    <aside class="about-card">
+      <div class="avatar-placeholder" aria-hidden="true">{SITE.author.slice(0, 1)}</div>
+      <dl>
+        <div><dt data-i18n data-zh="常驻" data-en="Based">常驻</dt><dd>China</dd></div>
+        <div><dt data-i18n data-zh="关注" data-en="Focus">关注</dt><dd>Hardware / Kernel / Security</dd></div>
+        <div><dt data-i18n data-zh="状态" data-en="Status">状态</dt><dd><span class="online-dot"></span> <span data-i18n data-zh="持续折腾中" data-en="Always tinkering">持续折腾中</span></dd></div>
+      </dl>
+      {contacts.length > 0 && (
+        <div class="about-links">
+          {contacts.map((item) => <a href={item.href}>{item.label} ↗</a>)}
+        </div>
+      )}
+    </aside>
+  </div>
+</BaseLayout>

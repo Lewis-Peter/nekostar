@@ -1,0 +1,111 @@
+<div class="site-controls" role="group" aria-label="显示偏好">
+  <button class="preference-control" type="button" data-theme-toggle aria-label="颜色模式：跟随系统" title="颜色模式：跟随系统">
+    <span class="preference-control__icon" data-theme-icon aria-hidden="true">◐</span>
+    <span data-theme-label>自动</span>
+  </button>
+  <button class="preference-control preference-control--language" type="button" data-language-toggle aria-label="Switch to English" title="Switch to English">
+    <span data-language-label>EN</span>
+  </button>
+</div>
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const themeButton = document.querySelector('[data-theme-toggle]');
+    const languageButton = document.querySelector('[data-language-toggle]');
+    if (!(themeButton instanceof HTMLButtonElement) || !(languageButton instanceof HTMLButtonElement)) return;
+
+    const themeOrder = ['system', 'light', 'dark'];
+    const themeIcons = { system: '◐', light: '☼', dark: '☾' };
+    const copy = {
+      zh: {
+        themes: { system: '自动', light: '浅色', dark: '深色' },
+        themePrefix: '颜色模式',
+        languageAction: 'Switch to English',
+        languageButton: 'EN'
+      },
+      en: {
+        themes: { system: 'System', light: 'Light', dark: 'Dark' },
+        themePrefix: 'Color mode',
+        languageAction: '切换到中文',
+        languageButton: '中'
+      }
+    };
+
+    const readTheme = () => {
+      try {
+        const saved = localStorage.getItem('wiki-theme');
+        return themeOrder.includes(saved) ? saved : 'system';
+      } catch {
+        return 'system';
+      }
+    };
+
+    const readLanguage = () => root.dataset.lang === 'en' ? 'en' : 'zh';
+
+    const updateGiscus = (settings) => {
+      const frame = document.querySelector('iframe.giscus-frame');
+      if (!(frame instanceof HTMLIFrameElement)) return;
+      frame.contentWindow?.postMessage({ giscus: { setConfig: settings } }, 'https://giscus.app');
+    };
+
+    const applyTheme = (theme, persist = true) => {
+      if (theme === 'system') delete root.dataset.theme;
+      else root.dataset.theme = theme;
+      if (persist) {
+        try { localStorage.setItem('wiki-theme', theme); } catch {}
+      }
+
+      const language = readLanguage();
+      const label = copy[language].themes[theme];
+      const accessibleLabel = `${copy[language].themePrefix}：${label}`;
+      const icon = themeButton.querySelector('[data-theme-icon]');
+      const text = themeButton.querySelector('[data-theme-label]');
+      if (icon) icon.textContent = themeIcons[theme];
+      if (text) text.textContent = label;
+      themeButton.setAttribute('aria-label', accessibleLabel);
+      themeButton.title = accessibleLabel;
+      updateGiscus({ theme: theme === 'system' ? 'preferred_color_scheme' : theme });
+    };
+
+    const applyLanguage = (language, persist = true) => {
+      // 这是界面语言，不是文档语言：文章标题、摘要、正文始终是中文，
+      // 所以 <html lang> 保持 zh-CN，只给翻译过的 UI 元素单独标 lang。
+      root.dataset.lang = language;
+      if (persist) {
+        try { localStorage.setItem('wiki-language', language); } catch {}
+      }
+
+      document.querySelectorAll('[data-i18n]').forEach((element) => {
+        const value = element.getAttribute(`data-${language}`);
+        if (value === null) return;
+        element.textContent = value;
+        element.lang = language === 'en' ? 'en' : 'zh-CN';
+      });
+      document.querySelectorAll('[data-localized-date]').forEach((element) => {
+        const value = element.getAttribute('datetime');
+        if (!value) return;
+        const date = new Date(value);
+        element.textContent = new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'zh-CN', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        }).format(date);
+      });
+
+      languageButton.querySelector('[data-language-label]').textContent = copy[language].languageButton;
+      languageButton.setAttribute('aria-label', copy[language].languageAction);
+      languageButton.title = copy[language].languageAction;
+      applyTheme(readTheme(), false);
+      updateGiscus({ lang: language === 'en' ? 'en' : 'zh-CN' });
+    };
+
+    themeButton.addEventListener('click', () => {
+      const current = readTheme();
+      applyTheme(themeOrder[(themeOrder.indexOf(current) + 1) % themeOrder.length]);
+    });
+    languageButton.addEventListener('click', () => applyLanguage(readLanguage() === 'zh' ? 'en' : 'zh'));
+
+    const initialize = () => applyLanguage(readLanguage(), false);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true });
+    else initialize();
+  })();
+</script>

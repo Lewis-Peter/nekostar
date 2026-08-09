@@ -1,0 +1,117 @@
+---
+import '../styles/global.css';
+import SiteControls from '../components/SiteControls.astro';
+import { SITE, LINKS } from '../site.config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** 文章页传 'article'，其余页面用默认的 'website' */
+  ogType?: 'website' | 'article';
+  publishedTime?: Date;
+  tags?: string[];
+}
+
+const {
+  title = SITE.name,
+  description = SITE.description,
+  ogType = 'website',
+  publishedTime,
+  tags = []
+} = Astro.props;
+const pageTitle = title === SITE.name ? title : `${title} · ${SITE.name}`;
+const pathname = Astro.url.pathname;
+
+const base = Astro.site ?? new URL(SITE.origin);
+const canonical = new URL(pathname, base);
+const ogImage = SITE.ogImage ? new URL(SITE.ogImage, base) : null;
+
+// owns：这一项还负责哪些路由。文章页、归档页、标签页都属于「文章」。
+const navItems = [
+  { href: '/', zh: '文章', en: 'Posts', owns: ['/posts/', '/tags/'] },
+  { href: '/projects/', zh: '项目', en: 'Projects', owns: [] },
+  { href: '/tools/', zh: 'AI API', en: 'AI API', owns: [] },
+  { href: '/about/', zh: '关于', en: 'About', owns: [] }
+];
+
+const isActive = (item: (typeof navItems)[number]) =>
+  (item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)) ||
+  item.owns.some((prefix) => pathname.startsWith(prefix));
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    {ogImage && <meta property="og:image" content={ogImage.href} />}
+    {ogType === 'article' && publishedTime && (
+      <meta property="article:published_time" content={publishedTime.toISOString()} />
+    )}
+    {ogType === 'article' && tags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage.href} />}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet" />
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('wiki-theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+        // 只切界面语言：文章标题和正文始终是中文，所以 <html lang> 不动
+        const language = localStorage.getItem('wiki-language') === 'en' ? 'en' : 'zh';
+        document.documentElement.dataset.lang = language;
+      } catch {}
+    </script>
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content" data-i18n data-zh="跳到正文" data-en="Skip to content">跳到正文</a>
+    <header class="site-header">
+      <div class="shell site-header__inner">
+        <a class="site-logo" href="/" aria-label={`${SITE.name} 首页`}>
+          <span>{SITE.logo}</span>
+        </a>
+        <div class="site-header__right">
+          <nav aria-label="主导航">
+            <ul>
+              {navItems.map((item) => (
+                <li><a href={item.href} aria-current={isActive(item) ? 'page' : undefined} data-i18n data-zh={item.zh} data-en={item.en}>{item.zh}</a></li>
+              ))}
+            </ul>
+          </nav>
+          <SiteControls />
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell site-footer__inner">
+        <p>© {new Date().getFullYear()} {SITE.author}. <span data-i18n data-zh="保持好奇，持续折腾。" data-en="Stay curious. Keep building.">保持好奇，持续折腾。</span></p>
+        {LINKS.github && <p><a href={LINKS.github}>GitHub</a></p>}
+      </div>
+    </footer>
+  </body>
+</html>
