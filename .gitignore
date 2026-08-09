@@ -6,3 +6,6 @@ dist/
 
 # 本地调试截图，不入库
 .playwright-mcp/
+
+# 文章草稿，成稿后手动移进 src/content/posts/
+drafts/
