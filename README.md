@@ -86,7 +86,6 @@ export CLOUDFLARE_ACCOUNT_ID=895d2b6d62a42bfd0289e9bf969f5942
 域名：
 
 - `nekostar.blog` → Pages 项目（CNAME 到 `nekostar.pages.dev`，proxied）
-- `www.nekostar.blog` → 301 到裸域，由 zone 上的 Single Redirect 规则处理
 - `nekostar.pages.dev` → Pages 默认域名，可用来验证部署
 
 `astro.config.mjs` 里 `vite.server/preview.allowedHosts` 是早期用 Cloudflare Tunnel 从本机对外服务时留下的，现在不需要了，但留着不影响本地调试。
