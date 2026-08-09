@@ -29,22 +29,38 @@ const configured = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.category && GI
   ></script>
   <script is:inline>
     (() => {
+      const ORIGIN = 'https://giscus.app';
       const section = document.currentScript?.closest('.comments');
       if (!section) return;
-      const sync = () => {
+
+      // iframe 刚插进 DOM 时还停在 about:blank，此时 postMessage 指定 giscus.app
+      // 作为 targetOrigin 会被浏览器拒绝（报 origin 不匹配），配置就丢了。
+      // 所以先排队，等 giscus 自己发来第一条消息（说明它真的加载好了）再统一发送。
+      let ready = false;
+      const queue = [];
+
+      const post = (config) => {
         const frame = section.querySelector('iframe.giscus-frame');
-        if (!(frame instanceof HTMLIFrameElement)) return false;
-        const root = document.documentElement;
-        const language = root.dataset.lang === 'en' ? 'en' : 'zh-CN';
-        const theme = root.dataset.theme || 'preferred_color_scheme';
-        frame.contentWindow?.postMessage({ giscus: { setConfig: { lang: language, theme } } }, 'https://giscus.app');
-        return true;
+        frame?.contentWindow?.postMessage({ giscus: { setConfig: config } }, ORIGIN);
       };
-      if (sync()) return;
-      const observer = new MutationObserver(() => {
-        if (sync()) observer.disconnect();
+
+      window.addEventListener('message', (event) => {
+        if (event.origin !== ORIGIN || ready) return;
+        ready = true;
+        while (queue.length) post(queue.shift());
       });
-      observer.observe(section, { childList: true, subtree: true });
+
+      // 暴露给 SiteControls：切换主题/语言时调用，未就绪会自动排队
+      window.__giscusSetConfig = (config) => {
+        if (ready) post(config);
+        else queue.push(config);
+      };
+
+      const root = document.documentElement;
+      window.__giscusSetConfig({
+        lang: root.dataset.lang === 'en' ? 'en' : 'zh-CN',
+        theme: root.dataset.theme || 'preferred_color_scheme'
+      });
     })();
   </script>
   )}
