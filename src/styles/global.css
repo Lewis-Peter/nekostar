@@ -233,7 +233,7 @@ main .listing-page {
 
 /* 未填写的占位内容：故意做得显眼，上线前不该还看得到虚线 */
 [data-pending] { text-decoration: underline dashed var(--vermilion) 1px; text-underline-offset: 4px; }
-.comments__pending, .project-card__pending { color: var(--ink-light); font-size: 13px; }
+.comments__pending { color: var(--ink-light); font-size: 13px; }
 
 /* --- 5. 页眉 / 页脚 ----------------------------------------------------- */
 

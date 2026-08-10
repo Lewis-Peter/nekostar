@@ -41,7 +41,7 @@ const projects = [
   <div class="shell page-intro">
     <p class="eyebrow">PROJECTS</p>
     <h1 data-i18n data-zh="做过的东西" data-en="Things I have built">做过的东西</h1>
-    <p data-i18n data-zh="一些从想法走到可运行代码的项目。这里目前是骨架，后续会补充仓库、演示和完整复盘。" data-en="Projects that made it from an idea to running code. Repositories, demos, and full retrospectives will be added here.">一些从想法走到可运行代码的项目。这里目前是骨架，后续会补充仓库、演示和完整复盘。</p>
+    <p data-i18n data-zh="一些从想法走到可运行代码的项目。" data-en="Projects that made it from an idea to running code.">一些从想法走到可运行代码的项目。</p>
   </div>
   <section class="shell project-grid" aria-label="项目列表">
     {projects.map((project) => (
@@ -52,10 +52,10 @@ const projects = [
         <p class="project-card__type" data-i18n data-zh={project.type} data-en={project.typeEn}>{project.type}</p>
         <h2 data-i18n data-zh={project.name} data-en={project.nameEn ?? project.name}>{project.name}</h2>
         <p data-i18n data-zh={project.description} data-en={project.descriptionEn}>{project.description}</p>
-        {project.url ? (
+        {/* 没有 url 就什么都不渲染：写一行「待补充」等于在每张卡上盖一个未完工的章，
+            读者得到的信息还不如留白。等真有仓库或详情页了链接自然会出现。 */}
+        {project.url && (
           <a href={project.url} aria-label={`查看 ${project.name} 项目`}><span data-i18n data-zh="项目详情" data-en="Project details">项目详情</span> <span aria-hidden="true">↗</span></a>
-        ) : (
-          <span class="project-card__pending" data-pending data-i18n data-zh="项目详情（待补充）" data-en="Project details (coming soon)">项目详情（待补充）</span>
         )}
       </article>
     ))}
