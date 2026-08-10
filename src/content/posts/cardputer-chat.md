@@ -3,7 +3,10 @@ title: "用 M5Stack Cardputer 做一个口袋 ChatGPT 终端"
 date: 2026-08-08
 tags: ["esp32", "cardputer", "hardware", "chatgpt", "tutorial"]
 summary: "给 M5Stack Cardputer 写了一个 ChatGPT 聊天客户端，接 OpenAI 兼容 API，国内可用。"
-draft: false
+# 示例稿：正文里还有「这是一篇示例文章」和两节「占位：」，
+# 代码是 api.example.com / YOUR_MODEL 的演示片段，不是实跑的。
+# 等 drafts/ 里的真文章补齐实测数据后再换掉这篇。
+draft: true
 apiNote: true
 ---
 

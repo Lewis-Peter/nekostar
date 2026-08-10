@@ -31,6 +31,10 @@ const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0
       <div class="post-list">
         {posts.map((post) => <PostCard post={post} />)}
       </div>
+      {/* 一篇都没有时，标题底下直接空白会像是页面坏了；给一句话把它坐实成「还没开始写」。 */}
+      {posts.length === 0 && (
+        <p class="empty-note" data-i18n data-zh="还没有公开的文章。第一篇正在写，写完会出现在这里。" data-en="No posts published yet. The first one is being written and will show up here.">还没有公开的文章。第一篇正在写，写完会出现在这里。</p>
+      )}
       {allPosts.length > posts.length && (
         <a class="post-list__more" href="/posts/" data-i18n data-zh={`查看全部 ${allPosts.length} 篇 →`} data-en={`View all ${allPosts.length} posts →`}>查看全部 {allPosts.length} 篇 →</a>
       )}
@@ -55,7 +59,12 @@ const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0
       <div class="sidebar-note">
         <span class="sidebar-note__label" data-i18n data-zh="归档" data-en="ARCHIVE">归档</span>
         <p>
-          <a href="/posts/" data-i18n data-zh={`按时间浏览全部 ${allPosts.length} 篇 →`} data-en={`Browse all ${allPosts.length} posts by date →`}>按时间浏览全部 {allPosts.length} 篇 →</a>
+          {/* 没有文章时不报数：「全部 0 篇」比不写还难看。 */}
+          {allPosts.length > 0 ? (
+            <a href="/posts/" data-i18n data-zh={`按时间浏览全部 ${allPosts.length} 篇 →`} data-en={`Browse all ${allPosts.length} posts by date →`}>按时间浏览全部 {allPosts.length} 篇 →</a>
+          ) : (
+            <a href="/posts/" data-i18n data-zh="按时间浏览 →" data-en="Browse by date →">按时间浏览 →</a>
+          )}
         </p>
       </div>
       <div class="sidebar-note">

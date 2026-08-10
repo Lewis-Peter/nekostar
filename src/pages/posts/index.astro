@@ -35,5 +35,8 @@ const years = [...byYear].sort((a, b) => b[0] - a[0]);
         </ol>
       </section>
     ))}
+    {posts.length === 0 && (
+      <p class="empty-note" data-i18n data-zh="还没有公开的文章。" data-en="No posts published yet.">还没有公开的文章。</p>
+    )}
   </div>
 </BaseLayout>

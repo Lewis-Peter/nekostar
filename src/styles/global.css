@@ -235,6 +235,10 @@ main .listing-page {
 [data-pending] { text-decoration: underline dashed var(--vermilion) 1px; text-underline-offset: 4px; }
 .comments__pending { color: var(--ink-light); font-size: 13px; }
 
+/* 空列表的说明文字。和 [data-pending] 不同：那个标记的是「忘了填」，
+   这个陈述的是「确实还没有」，所以不加虚线。 */
+.empty-note { margin: 0; padding-block: 28px; color: var(--ink-light); font-size: 14px; }
+
 /* --- 5. 页眉 / 页脚 ----------------------------------------------------- */
 
 .site-header { border-bottom: var(--rule); }
