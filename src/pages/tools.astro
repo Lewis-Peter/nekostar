@@ -2,32 +2,35 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { API_SERVICE } from '../site.config';
 
-// 这一页只负责"告诉你它存在"。价格、模型列表、接入文档都在服务站上，不在这里重复。
+// 这一页只做两件事：给出链接，说清我和它的关系。
+// 服务不是我的，所以这里不承诺任何具体能力（线路、计费方式、兼容格式）——
+// 替别人的服务打包票，出了事赔不起信用。服务站目前也没有公开文档页，
+// 点过去是登录墙，所以别再写成"文档都在那边看"。
 const site = API_SERVICE.site;
 ---
 
-<BaseLayout title="AI API" description="我自己维护的一个 OpenAI 兼容 API 中转。">
+<BaseLayout title="AI API" description="一个朋友在运营的 AI API 中转站，附利益披露。">
   <div class="shell listing-page tool-page">
     <p class="eyebrow">AI API</p>
-    <h1 data-i18n data-zh="我在跑一个 API 中转" data-en="I run an API relay">我在跑一个 API 中转</h1>
+    <h1 data-i18n data-zh="朋友在跑的一个 API 中转" data-en="A friend runs an API relay">朋友在跑的一个 API 中转</h1>
 
     <div class="prose">
-      <p data-i18n data-zh="写这些文章的时候我经常要调 AI API。国内直连、按量计费、保持 OpenAI 兼容格式——我自己需要这么一个东西，就顺手做了，也开放给别人用。" data-en="I call AI APIs constantly while writing these posts. I wanted one that works from China, bills by usage, and stays OpenAI-compatible—so I built it, and opened it up.">写这些文章的时候我经常要调 AI API。国内直连、按量计费、保持 OpenAI 兼容格式——我自己需要这么一个东西，就顺手做了，也开放给别人用。</p>
-      <p data-i18n data-zh="价格、模型列表和接入文档都在服务站上，这里不重复一遍。这一页只是告诉你它存在，以及它是我做的。" data-en="Pricing, the model list, and the docs all live on the service site—no point duplicating them here. This page just tells you it exists, and that it is mine.">价格、模型列表和接入文档都在服务站上，这里不重复一遍。这一页只是告诉你它存在，以及它是我做的。</p>
+      <p data-i18n data-zh="写文章的时候我经常要调 AI API。朋友搭了一个中转站，这一页没别的内容，就是把链接放在这儿，顺便说清楚我跟它是什么关系。" data-en="I call AI APIs constantly while writing these posts. A friend put together a relay; this page has no other purpose than to point at it and state my relationship to it.">写文章的时候我经常要调 AI API。朋友搭了一个中转站，这一页没别的内容，就是把链接放在这儿，顺便说清楚我跟它是什么关系。</p>
+      <p data-i18n data-zh="支持哪些模型、怎么计费，得注册进去才看得到，我不在这里转述。服务不是我做的，我替它打的包票不算数——你自己看过再决定。" data-en="Which models it supports and how it bills are visible only after you register, and I will not paraphrase them here. It is not my service, so my assurances about it are worth little. Look for yourself before deciding.">支持哪些模型、怎么计费，得注册进去才看得到，我不在这里转述。服务不是我做的，我替它打的包票不算数——你自己看过再决定。</p>
     </div>
 
     {site
       ? <p class="tool-page__out"><a class="button button--primary" href={site} rel="noopener">herosub2.moira-e.com <span aria-hidden="true">↗</span></a></p>
-      : <p class="tool-page__out" data-pending data-i18n data-zh="服务站还在收尾，地址填进 src/site.config.ts 的 API_SERVICE.site 后这里会出现出口链接。" data-en="The service site is still being finished. Fill API_SERVICE.site in src/site.config.ts and the link will appear here.">服务站还在收尾，地址填进 src/site.config.ts 的 API_SERVICE.site 后这里会出现出口链接。</p>}
+      : <p class="tool-page__out" data-pending data-i18n data-zh="服务站地址还没填（见 src/site.config.ts 的 API_SERVICE.site）。" data-en="The service URL is not set yet (see API_SERVICE.site in src/site.config.ts).">服务站地址还没填（见 src/site.config.ts 的 API_SERVICE.site）。</p>}
 
     <div class="tool-page__notes">
       <p>
         <span class="tool-page__label" data-i18n data-zh="利益相关" data-en="DISCLOSURE">利益相关</span>
-        <span data-i18n data-zh="这是我自己运营的服务，你从这里过去注册，我是有收益的。" data-en="I operate this service. If you sign up through this link, I make money from it.">这是我自己运营的服务，你从这里过去注册，我是有收益的。</span>
+        <span data-i18n data-zh="这不是我的服务，是朋友在运营。你从这里过去注册，我有分成。" data-en="This is not my service; a friend operates it. If you sign up through this link, I get a cut.">这不是我的服务，是朋友在运营。你从这里过去注册，我有分成。</span>
       </p>
       <p>
         <span class="tool-page__label" data-i18n data-zh="已知限制" data-en="KNOWN LIMITS">已知限制</span>
-        <span data-i18n data-zh="一个人在维护，不提供 SLA，也不保证长期可用。出问题直接来找我，别指望工单系统。" data-en="Maintained by one person. No SLA, no promise it stays up forever. If something breaks, come find me—there is no ticket system.">一个人在维护，不提供 SLA，也不保证长期可用。出问题直接来找我，别指望工单系统。</span>
+        <span data-i18n data-zh="一个人在维护，没有 SLA，也不保证长期可用。真出了问题，我只能帮你转达。" data-en="Maintained by one person. No SLA, no promise it stays up. If something breaks, all I can do is pass the message along.">一个人在维护，没有 SLA，也不保证长期可用。真出了问题，我只能帮你转达。</span>
       </p>
     </div>
   </div>
