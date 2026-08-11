@@ -1,10 +1,21 @@
 ---
 /**
+ * ⚠️ 已停用（PostLayout 不再渲染它），恢复前必须先改文案。
+ *
+ * 现在这段有四处不实，别直接挂回来：
+ *   1. 「作者自己跑了一个中转服务」——服务是朋友运营的，不是作者的
+ *   2. 「价格便宜」——没有依据
+ *   3. 「国内直连」——没有依据
+ *   4. 「新用户有免费额度」——没有依据
+ *
+ * 后三条源自服务站的落地页，而那页是 sub2api 开源项目的默认文案一字未改
+ * （命中上游 frontend/src/i18n/locales/en/landing.ts），证实不了任何一条。
+ *
  * 文末引用一律指向站内的 /tools/，不直接跳服务站——
  * /tools 上有「利益相关」和「已知限制」，读者应该先看到这两段再决定要不要过去。
+ * （/tools 目前也一并停用，在 src/pages/_tools.astro）
  */
 ---
-
 <aside class="api-promo" aria-label="作者推荐">
   <span class="api-promo__eyebrow" data-i18n data-zh="作者推荐" data-en="AUTHOR’S PICK">作者推荐</span>
   <p>
