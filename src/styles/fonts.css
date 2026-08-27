@@ -19,7 +19,7 @@
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: url(/fonts/noto-serif-sc/noto-serif-sc-subset.628d891df82d.woff2) format('woff2');
+  src: url(/fonts/noto-serif-sc/noto-serif-sc-subset.c59f45292922.woff2) format('woff2');
 }
 
 /* Noto Serif SC 400 — exact build-time subset */
@@ -28,5 +28,5 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(/fonts/noto-serif-sc/noto-serif-sc-subset.628d891df82d.woff2) format('woff2');
+  src: url(/fonts/noto-serif-sc/noto-serif-sc-subset.c59f45292922.woff2) format('woff2');
 }
