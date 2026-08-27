@@ -9,7 +9,7 @@
     "build": "astro check && astro build && node scripts/subset-serif-font.mjs",
     "preview": "astro preview",
     "check": "astro check",
-    "deploy": "pnpm build && wrangler pages deploy dist --project-name=nekostar --branch=main"
+    "deploy": "pnpm build && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.8",

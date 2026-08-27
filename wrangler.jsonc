@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // 名字必须和 dashboard 里的 Worker 同名，否则 Workers Builds 会构建失败
+  "name": "nekostar",
+  "compatibility_date": "2026-08-28",
+  "assets": {
+    "directory": "./dist",
+    // Pages 会自动拿 404.html 兜底，Workers 默认不会，要显式开
+    "not_found_handling": "404-page",
+    // 目录索引带尾斜杠（/posts/xxx/），和站内链接、sitemap 的写法保持一致
+    "html_handling": "auto-trailing-slash"
+  }
+}

@@ -86,22 +86,41 @@ apiNote: false
 
 ## 部署
 
-站点托管在 Cloudflare Pages（项目名 `nekostar`），走 Direct Upload。
+站点托管在 Cloudflare Workers（Worker 名 `nekostar`），静态资源走 Workers Static Assets，
+配置见 `wrangler.jsonc`。日常不需要手动部署：Workers Builds 监听 `main`，push 即构建上线。
+
+构建设置（在 dashboard 的 Settings → Builds 里）：
+
+| 项 | 值 |
+| --- | --- |
+| Build command | `pnpm build` |
+| Deploy command | `npx wrangler deploy` |
+| Git branch | `main` |
+| Root directory | 留空 |
+
+`wrangler.jsonc` 里两处不能省：`not_found_handling: "404-page"` 让 `src/pages/404.astro`
+生效（Pages 会自动兜底，Workers 不会），`html_handling: "auto-trailing-slash"` 让目录索引
+带尾斜杠，和站内链接、sitemap 的写法一致。Worker 名必须和 dashboard 里一致，否则构建失败。
+
+需要绕过 CI 手动发一次时：
 
 ```bash
-pnpm deploy    # pnpm build && wrangler pages deploy
+pnpm deploy    # pnpm build && wrangler deploy
 ```
 
-需要环境变量：
+手动部署需要环境变量：
 
 ```bash
-export CLOUDFLARE_API_TOKEN=<有 Pages:Edit 权限的 token>
+export CLOUDFLARE_API_TOKEN=<有 Workers Scripts:Edit 权限的 token>
 export CLOUDFLARE_ACCOUNT_ID=895d2b6d62a42bfd0289e9bf969f5942
 ```
 
 域名：
 
-- `nekostar.blog` → Pages 项目（CNAME 到 `nekostar.pages.dev`，proxied）
-- `nekostar.pages.dev` → Pages 默认域名，可用来验证部署
+- `nekostar.blog` → Worker 的自定义域名（Workers 只接受 NS 托管在 Cloudflare 的域名）
+- `nekostar.<账号子域>.workers.dev` → 默认域名，可用来验证部署
+
+> 迁移前站点跑在 Pages 项目 `nekostar` 上，走 Direct Upload。Pages 的 Direct Upload 项目
+> 无法事后接 Git，所以换成了 Workers；旧 Pages 项目确认新站正常后删除。
 
 `astro.config.mjs` 里 `vite.server/preview.allowedHosts` 是早期用 Cloudflare Tunnel 从本机对外服务时留下的，现在不需要了，但留着不影响本地调试。
