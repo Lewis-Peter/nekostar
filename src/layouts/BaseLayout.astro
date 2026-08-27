@@ -29,7 +29,8 @@ const ogImage = SITE.ogImage ? new URL(SITE.ogImage, base) : null;
 // owns：这一项还负责哪些路由。文章页、归档页、标签页都属于「文章」。
 const navItems = [
   { href: '/', zh: '文章', en: 'Posts', owns: ['/posts/', '/tags/'] },
-  { href: '/projects/', zh: '项目', en: 'Projects', owns: [] },
+  // 「项目」暂时撤下：可展示的项目都还没有公开的仓库或详情页，
+  // 页面在 src/pages/_projects.astro，等有东西可放了再挂回来。
   { href: '/about/', zh: '关于', en: 'About', owns: [] }
 ];
 

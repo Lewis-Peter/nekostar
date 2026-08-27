@@ -1,40 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// url 为 null 表示还没有可以指向的仓库或详情页，卡片会渲染成不可点的说明文字。
-const projects = [
-  {
-    url: null,
-    name: 'Cardputer Chat',
-    type: '嵌入式 / AI',
-    typeEn: 'Embedded / AI',
-    description: '运行在 M5Stack Cardputer 上的口袋 AI 终端，通过 OpenAI 兼容接口完成流式对话。',
-    descriptionEn: 'A pocket AI terminal for M5Stack Cardputer with streaming conversations through an OpenAI-compatible API.',
-    status: '开发中',
-    statusEn: 'In progress'
-  },
-  {
-    url: null,
-    name: 'DroneStitch',
-    type: '计算机视觉',
-    typeEn: 'Computer Vision',
-    description: '面向无人机航拍素材的轻量图像拼接工具，探索低成本测绘与现场快速预览。',
-    descriptionEn: 'A lightweight image stitcher for drone footage, exploring low-cost mapping and rapid field previews.',
-    status: '实验项目',
-    statusEn: 'Experiment'
-  },
-  {
-    url: null,
-    name: 'Linux 内核补丁',
-    nameEn: 'Linux Kernel Patches',
-    type: 'Kernel / Security',
-    typeEn: 'Kernel / Security',
-    description: '驱动、性能和安全方向的内核补丁与研究记录；后续补充上游链接和技术说明。',
-    descriptionEn: 'Kernel patches and research notes on drivers, performance, and security, with upstream links to follow.',
-    status: '持续更新',
-    statusEn: 'Ongoing'
-  }
-];
+// 这一页连同导航里的「项目」一起停用（文件名前缀 _ 表示不出路由）。
+// 原来那三张卡（Cardputer Chat / DroneStitch / 内核补丁）url 全是 null，
+// 说了三个项目却一个都点不进去，读者拿到的只是三句自我介绍。
+// 等真有仓库或详情页了，往 projects 里加回条目、去掉文件名前缀、
+// 把 BaseLayout 的导航项恢复即可——下面的卡片结构原样留着。
+
+type Project = {
+  /** 为 null 表示还没有可以指向的仓库或详情页，卡片会渲染成不可点的说明文字 */
+  url: string | null;
+  name: string;
+  nameEn?: string;
+  type: string;
+  typeEn: string;
+  description: string;
+  descriptionEn: string;
+  status: string;
+  statusEn: string;
+};
+
+const projects: Project[] = [];
 ---
 
 <BaseLayout title="项目" description="硬件、安全和 Linux 内核相关项目。">
@@ -60,4 +46,9 @@ const projects = [
       </article>
     ))}
   </section>
+  {projects.length === 0 && (
+    <div class="shell">
+      <p class="empty-note" data-i18n data-zh="还没有可以公开的项目。" data-en="No projects to show yet.">还没有可以公开的项目。</p>
+    </div>
+  )}
 </BaseLayout>

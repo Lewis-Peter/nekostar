@@ -50,13 +50,18 @@ apiNote: false
 
 约定：**值为 `null` 表示尚未确定**。组件遇到 `null` 不会渲染死链接，`pnpm build` 结束时会列出所有未填项。
 
-构建警告**不覆盖**下面这些页面内嵌的占位内容，它们需要各自去改（页面上带朱红虚线的 `[data-pending]` 是另一个提示信号）：
+构建警告**不覆盖**页面内嵌的占位内容，它们需要各自去改（页面上带朱红虚线的 `[data-pending]` 是另一个提示信号）：
 
-- `src/pages/projects.astro` — 三个项目的 `url` 均为 `null`，卡片会显示「项目详情（待补充）」
 - `src/pages/about.astro` — 骨架文案
-- `src/content/posts/cardputer-chat.md` — 示例文章，代码里用的是 `api.example.com`
 
-上线前：构建无警告 + 页面上看不到虚线 + 上面四处处理掉。
+上线前：构建无警告 + 页面上看不到虚线 + 上面一处处理掉。
+
+## 暂时下架的页面
+
+文件名以 `_` 开头的页面不会生成路由，导航里也没有入口，等内容做起来再挂回去：
+
+- `src/pages/_tools.astro` — AI API 服务的推荐页，连同文末的 `ApiPromo` 一起停用
+- `src/pages/_projects.astro` — 项目列表；`projects` 数组现在是空的，加回条目后去掉文件名前缀、恢复 `BaseLayout` 的导航项即可
 
 ## 站点输出
 

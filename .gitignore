@@ -9,3 +9,6 @@ dist/
 
 # 文章草稿，成稿后手动移进 src/content/posts/
 drafts/
+
+# JetBrains IDE
+.idea/
