@@ -10,6 +10,8 @@ interface Props {
   ogType?: 'website' | 'article';
   publishedTime?: Date;
   tags?: string[];
+  /** 覆盖全站默认的 SITE.ogImage，文章页用它传本文封面 */
+  ogImage?: string;
 }
 
 const {
@@ -17,14 +19,16 @@ const {
   description = SITE.description,
   ogType = 'website',
   publishedTime,
-  tags = []
+  tags = [],
+  ogImage: ogImageOverride
 } = Astro.props;
 const pageTitle = title === SITE.name ? title : `${title} · ${SITE.name}`;
 const pathname = Astro.url.pathname;
 
 const base = Astro.site ?? new URL(SITE.origin);
 const canonical = new URL(pathname, base);
-const ogImage = SITE.ogImage ? new URL(SITE.ogImage, base) : null;
+const ogImageSrc = ogImageOverride ?? SITE.ogImage;
+const ogImage = ogImageSrc ? new URL(ogImageSrc, base) : null;
 
 // owns：这一项还负责哪些路由。文章页、归档页、标签页都属于「文章」。
 const navItems = [

@@ -1,13 +1,14 @@
 ---
-title: "比零售版多一个大核：闲鱼上那台 ThinkPad T14s Gen 6"
+title: "比零售版多一个大核：闲鱼上捡到的 ThinkPad T14s Gen 6"
 date: 2026-08-28
 tags: ["thinkpad", "amd", "linux", "二手"]
 summary: "3560 块在闲鱼捡到一台 ThinkPad T14s Gen 6，CPU 是颗工程样片。数了数核心：4 大 + 4 小，比零售的 Ryzen AI 7 PRO 360 多一个大核。一路查下来的硬件证据、我的推测，以及它到底能不能用。"
+cover: "/images/t14s-eng-sample/cover.png"
 draft: false
 apiNote: false
 ---
 
-![3560 元从闲鱼捡回来的 ThinkPad T14s，小红点还在](/images/t14s-eng-sample/cover.jpg)
+![AMD Eng Sample: 100-000001335-10_Y (4+4) @ 5.00 GHz——零售版是 3 大 + 5 小，这颗是 4 + 4](/images/t14s-eng-sample/cover.png)
 
 ## 一、起因：一个等等党的破防实录
 
@@ -46,6 +47,8 @@ apiNote: false
 ![闲鱼商品页：卖家写明「AMD Eng Sample 10000001335 处理器这个名字实际是 AMD Ryzen AI 7 PRO 360，工程机」](/images/t14s-eng-sample/xianyu-listing.jpg)
 
 ## 二、到手：先验机，再装系统
+
+![3560 元从闲鱼捡回来的 ThinkPad T14s，小红点还在](/images/t14s-eng-sample/thinkpad-t14s.jpg)
 
 机器是不带硬盘买的，所以自己配了块三星 990 EVO Plus 2TB 装上去，抹盘装 Arch。
 

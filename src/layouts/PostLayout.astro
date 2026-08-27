@@ -11,14 +11,15 @@ interface Props {
   summary: string;
   readingMinutes: number;
   apiNote?: boolean;
+  cover?: string;
 }
 
 // apiNote 暂时不解构：ApiPromo 停用后没人读它，解构了会触发 ts(6133)。
 // 接口里保留该字段，文章 frontmatter 照常可以写，恢复时再取回来。
-const { title, date, tags, summary, readingMinutes } = Astro.props;
+const { title, date, tags, summary, readingMinutes, cover } = Astro.props;
 ---
 
-<BaseLayout title={title} description={summary} ogType="article" publishedTime={date} tags={tags}>
+<BaseLayout title={title} description={summary} ogType="article" publishedTime={date} tags={tags} ogImage={cover}>
   <div class="shell post-shell">
     <article class="post">
       <header class="post-header">

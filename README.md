@@ -26,6 +26,7 @@ title: "文章标题"
 date: 2026-08-08
 tags: ["linux", "security"]
 summary: "用于文章列表和 SEO 的一句话摘要"
+cover: "/images/<slug>/cover.png"   # 可选
 draft: false
 apiNote: false
 ---
@@ -35,6 +36,13 @@ apiNote: false
 
 `apiNote: true` 会在文末显示那段 AI API 服务的引用，默认关闭——只给真正用到这个服务的文章打开，避免无关文章挂无关内容。
 
+`cover` 是本文专属的社交分享图（1200×630 或 16:9，放 `public/images/<slug>/`），会覆盖
+`SITE.ogImage` 那张全站默认图；不填就继续用默认的。注意它只影响 `og:image` / `twitter:image`，
+正文开头要不要放这张图得自己在 Markdown 里写——两处互不干涉。
+
+文章配图统一放 `public/images/<slug>/`，正文里用 `/images/<slug>/xxx.png` 这样的绝对路径引用。
+入库前记得剥掉图片元数据（手机截图会带机型和时间戳）：`magick in.jpg -strip out.jpg`。
+
 ## 发布前配置
 
 **站点级**占位内容集中在 `src/site.config.ts`：
@@ -43,7 +51,7 @@ apiNote: false
 | --- | --- |
 | `SITE.origin` | sitemap 与绝对链接使用的域名 |
 | `SITE.name` / `logo` / `author` | 站名、页眉 logo、页脚署名 |
-| `SITE.ogImage` | 社交分享预览图（1200×630 PNG，放 `public/`）；为 `null` 时输出 summary 卡片 |
+| `SITE.ogImage` | 社交分享预览图的**默认值**（1200×630 PNG，放 `public/`）；文章可用 frontmatter 的 `cover` 覆盖，为 `null` 且文章没写 `cover` 时输出 summary 卡片 |
 | `LINKS.github` / `email` | 页脚与关于页的联系方式；为 `null` 时不渲染 |
 | `GISCUS.*` | 评论区；未配置时不加载 giscus 脚本 |
 | `API_SERVICE.site` | AI API 服务站地址；为 `null` 时 /tools 显示待配置提示 |
