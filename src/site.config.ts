@@ -21,7 +21,19 @@ export const SITE = {
    * 建议 1200×630 的 PNG/JPG（各平台基本不支持 SVG）。
    * 为 null 时只输出 summary 卡片，不会输出坏图链接。
    */
-  ogImage: '/og.jpg' as string | null
+  ogImage: '/og.jpg' as string | null,
+  /**
+   * 标签页是否让搜索引擎收录。
+   *
+   * 文章少的时候每个标签页展示的内容和 /posts/ 几乎重合，属于薄内容，
+   * 所以先关掉：不进 sitemap，页面上输出 noindex。用 follow 而不是
+   * nofollow，链接权重照样能流到文章页。
+   *
+   * 文章攒到十几篇、各标签下的列表开始有区分度之后，把这里改成 true
+   * 即可同时恢复两处——astro.config.mjs 的 sitemap filter 和标签页的
+   * meta 都读这一个值，不会各改各的走岔。
+   */
+  indexTagPages: false
 };
 
 export const GISCUS_THEME_URLS = {

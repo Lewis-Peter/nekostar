@@ -52,6 +52,7 @@ apiNote: false
 | `SITE.origin` | sitemap 与绝对链接使用的域名 |
 | `SITE.name` / `logo` / `author` | 站名、页眉 logo、页脚署名 |
 | `SITE.ogImage` | 社交分享预览图的**默认值**（1200×630 PNG，放 `public/`）；文章可用 frontmatter 的 `cover` 覆盖，为 `null` 且文章没写 `cover` 时输出 summary 卡片 |
+| `SITE.indexTagPages` | 标签页是否让搜索引擎收录；`false` 时不进 sitemap 且输出 `noindex, follow`。文章少时标签页和 `/posts/` 内容重合，属于薄内容，攒到十几篇再改 `true` |
 | `LINKS.github` / `email` | 页脚与关于页的联系方式；为 `null` 时不渲染 |
 | `GISCUS.*` | 评论区；未配置时不加载 giscus 脚本 |
 | `API_SERVICE.site` | AI API 服务站地址；为 `null` 时 /tools 显示待配置提示 |
@@ -70,6 +71,15 @@ apiNote: false
 
 - `src/pages/_tools.astro` — AI API 服务的推荐页，连同文末的 `ApiPromo` 一起停用
 - `src/pages/_projects.astro` — 项目列表；`projects` 数组现在是空的，加回条目后去掉文件名前缀、恢复 `BaseLayout` 的导航项即可
+
+## SEO
+
+- `sitemap-index.xml` → `sitemap-0.xml`，`robots.txt` 末尾有 `Sitemap:` 声明，已提交 Google Search Console
+- `lastmod` 由 `astro.config.mjs` 的 `postLastmod()` 从文章 frontmatter 的 `date` 读出；
+  首页和 `/posts/` 跟着最新一篇走。那里读不了 `getCollection`（运行时 API），所以是直接解析文件
+- 标签页当前不收录，见上面的 `SITE.indexTagPages`
+- `robots.txt` 里 `# BEGIN/END Cloudflare Managed content` 之间那段是 Cloudflare 面板注入的 AI 爬虫
+  策略，不在本仓库里，改要去 Cloudflare 的 AI Crawl Control。它只挡 AI 抓取，`Googlebot` 不受影响
 
 ## 站点输出
 

@@ -12,6 +12,8 @@ interface Props {
   tags?: string[];
   /** 覆盖全站默认的 SITE.ogImage，文章页用它传本文封面 */
   ogImage?: string;
+  /** 输出 noindex，把页面挡在搜索结果外；仍然 follow，链接权重照常传递 */
+  noindex?: boolean;
 }
 
 const {
@@ -20,7 +22,8 @@ const {
   ogType = 'website',
   publishedTime,
   tags = [],
-  ogImage: ogImageOverride
+  ogImage: ogImageOverride,
+  noindex = false
 } = Astro.props;
 const pageTitle = title === SITE.name ? title : `${title} · ${SITE.name}`;
 const pathname = Astro.url.pathname;
@@ -51,6 +54,7 @@ const isActive = (item: (typeof navItems)[number]) =>
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="dark light" />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonical.href} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
