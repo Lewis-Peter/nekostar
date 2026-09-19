@@ -66,13 +66,20 @@ const noteLink = lang === 'zh' ? t(lang, 'post.translationLinkZh') : t(lang, 'po
       </header>
 
       {altPath && (
-        <p class="post-translation">{noteText}<a href={altPath} hreflang={lang === 'zh' ? 'en' : 'zh-CN'}>{noteLink}</a></p>
+        <aside class="post-translation" aria-label="Translation notice">
+          <span class="post-translation__text">{noteText}</span>
+          <a class="post-translation__link" href={altPath} hreflang={lang === 'zh' ? 'en' : 'zh-CN'}>{noteLink} ↗</a>
+        </aside>
       )}
 
       <TableOfContents headings={headings} lang={lang} />
 
       <div class="prose">
         <slot />
+      </div>
+
+      <div class="post-end-mark" aria-hidden="true">
+        <span>❖</span>
       </div>
 
       <footer class="post-footer">
