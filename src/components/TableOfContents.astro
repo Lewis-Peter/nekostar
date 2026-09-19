@@ -1,0 +1,39 @@
+---
+import { t, type Lang } from '../lib/i18n';
+
+export interface HeadingItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: HeadingItem[];
+  lang: Lang;
+}
+
+const { headings, lang } = Astro.props;
+// 提取 h2 和 h3 级别的目录项
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{items.length >= 2 && (
+  <nav class="post-toc" aria-label={t(lang, 'post.toc')}>
+    <details class="post-toc__details" open>
+      <summary class="post-toc__summary">
+        <span class="post-toc__eyebrow">
+          <span class="post-toc__marker" aria-hidden="true">§</span>
+          <span>{t(lang, 'post.toc')}</span>
+        </span>
+        <span class="post-toc__hint" aria-hidden="true"></span>
+      </summary>
+      <ol class="post-toc__list">
+        {items.map((item) => (
+          <li class={`post-toc__item post-toc__item--depth-${item.depth}`}>
+            <a href={`#${item.slug}`}>{item.text}</a>
+          </li>
+        ))}
+      </ol>
+    </details>
+  </nav>
+)}

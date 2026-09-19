@@ -1,13 +1,16 @@
 ---
+import { localizePath, t, DEFAULT_LANG, type Lang } from '../lib/i18n';
+
 interface Props {
   tags: string[];
+  lang?: Lang;
 }
 
-const { tags } = Astro.props;
+const { tags, lang = DEFAULT_LANG } = Astro.props;
 ---
 
-<ul class="tag-list" aria-label="文章标签">
+<ul class="tag-list" aria-label={t(lang, 'tag.aria')}>
   {tags.map((tag) => (
-    <li><a href={`/tags/${encodeURIComponent(tag)}/`}>{tag}</a></li>
+    <li><a href={localizePath(lang, `/tags/${encodeURIComponent(tag)}/`)}>{tag}</a></li>
   ))}
 </ul>

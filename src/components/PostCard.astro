@@ -1,23 +1,35 @@
 ---
-import type { CollectionEntry } from 'astro:content';
 import TagList from './TagList.astro';
-import { formatCardDate } from '../lib/posts';
+import { formatCardDate, postLang, postPath, estimateReadingTime, type Post } from '../lib/posts';
+import { t } from '../lib/i18n';
 
 interface Props {
-  post: CollectionEntry<'posts'>;
+  post: Post;
 }
 
 const { post } = Astro.props;
-const summary = post.data.summary.length > 100
-  ? `${post.data.summary.slice(0, 100)}…`
-  : post.data.summary;
+const lang = postLang(post);
+const readingMinutes = estimateReadingTime(post.body);
+
+// 摘要按字符截断：中文一个字就是一个视觉单位，英文这样切会砍在词中间，
+// 所以英文放宽到 160 并回退到最近的空格。
+const limit = lang === 'en' ? 160 : 100;
+const raw = post.data.summary;
+let summary = raw;
+if (raw.length > limit) {
+  const cut = raw.slice(0, limit);
+  const boundary = lang === 'en' ? cut.lastIndexOf(' ') : -1;
+  summary = `${(boundary > limit * 0.6 ? cut.slice(0, boundary) : cut).trimEnd()}…`;
+}
 ---
 
 <article class="post-card">
   <div class="post-card__meta">
     <time datetime={post.data.date.toISOString()}>{formatCardDate(post.data.date)}</time>
+    <span class="post-card__meta-sep" aria-hidden="true">/</span>
+    <span>{t(lang, 'post.about')} {readingMinutes} {t(lang, 'post.minRead')}</span>
   </div>
-  <h2><a href={`/posts/${post.id}/`}>{post.data.title}</a></h2>
+  <h2><a href={postPath(post)}>{post.data.title}</a></h2>
   <p>{summary}</p>
-  <TagList tags={post.data.tags} />
+  <TagList tags={post.data.tags} lang={lang} />
 </article>

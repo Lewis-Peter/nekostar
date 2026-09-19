@@ -16,6 +16,9 @@
  * （/tools 目前也一并停用，在 src/pages/_tools.astro）
  */
 ---
+
+{/* 组件当前没有任何页面在用（随 /tools 一起停用）。里面的 data-i18n 机制
+    已经在双语改造中废弃，恢复时改用 t(lang, ...)，见 src/lib/i18n.ts。 */}
 <aside class="api-promo" aria-label="作者推荐">
   <span class="api-promo__eyebrow" data-i18n data-zh="作者推荐" data-en="AUTHOR’S PICK">作者推荐</span>
   <p>

@@ -1,19 +1,36 @@
 ---
 import { getCollection, render } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
-import { estimateReadingTime } from '../../lib/posts';
+import { estimateReadingTime, postSlug, publishedIn } from '../../lib/posts';
+import { localizePath } from '../../lib/i18n';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+  const posts = await getCollection('posts', publishedIn('zh'));
+  // 另一语言已发布的同名文件，就是这篇的译文；没有就不显示语言互链，
+  // 也不输出 hreflang——指向不存在的页面比不声明更糟。
+  const translated = new Set(
+    (await getCollection('posts', publishedIn('en'))).map(postSlug)
+  );
+
+  return posts.map((post) => {
+    const slug = postSlug(post);
+    return {
+      params: { slug },
+      props: {
+        post,
+        altPath: translated.has(slug) ? localizePath('en', `/posts/${slug}/`) : null
+      }
+    };
+  });
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post, altPath } = Astro.props;
+const { Content, headings } = await render(post);
 const readingMinutes = estimateReadingTime(post.body);
 ---
 
 <PostLayout
+  lang="zh"
   title={post.data.title}
   date={post.data.date}
   tags={post.data.tags}
@@ -21,6 +38,8 @@ const readingMinutes = estimateReadingTime(post.body);
   readingMinutes={readingMinutes}
   apiNote={post.data.apiNote}
   cover={post.data.cover}
+  altPath={altPath}
+  headings={headings}
 >
   <Content />
 </PostLayout>

@@ -2,8 +2,14 @@
 import '../styles/global.css';
 import SiteControls from '../components/SiteControls.astro';
 import { SITE, LINKS } from '../site.config';
+import {
+  DEFAULT_LANG, HTML_LANG, OG_LOCALE, SITE_DESCRIPTION,
+  localizePath, t, type Lang
+} from '../lib/i18n';
 
 interface Props {
+  /** 页面语言。中文页不写前缀，英文页整体在 /en/ 下 */
+  lang?: Lang;
   title?: string;
   description?: string;
   /** 文章页传 'article'，其余页面用默认的 'website' */
@@ -14,18 +20,27 @@ interface Props {
   ogImage?: string;
   /** 输出 noindex，把页面挡在搜索结果外；仍然 follow，链接权重照常传递 */
   noindex?: boolean;
+  /**
+   * 另一语言的同一页面路径。没有对应页面时传 null（比如某篇文章还没译），
+   * 此时右上角的语言按钮退回到该语言的首页，而不是给出一个 404 链接。
+   */
+  altPath?: string | null;
 }
 
 const {
-  title = SITE.name,
-  description = SITE.description,
+  lang = DEFAULT_LANG,
+  title,
+  description,
   ogType = 'website',
   publishedTime,
   tags = [],
   ogImage: ogImageOverride,
-  noindex = false
+  noindex = false,
+  altPath
 } = Astro.props;
-const pageTitle = title === SITE.name ? title : `${title} · ${SITE.name}`;
+
+const pageDescription = description ?? SITE_DESCRIPTION[lang];
+const pageTitle = !title || title === SITE.name ? SITE.name : `${title} · ${SITE.name}`;
 const pathname = Astro.url.pathname;
 
 const base = Astro.site ?? new URL(SITE.origin);
@@ -33,38 +48,60 @@ const canonical = new URL(pathname, base);
 const ogImageSrc = ogImageOverride ?? SITE.ogImage;
 const ogImage = ogImageSrc ? new URL(ogImageSrc, base) : null;
 
+const otherLang: Lang = lang === 'zh' ? 'en' : 'zh';
+/** 语言按钮真的换页面，不是就地改文案，所以有没有译文这里必须区分清楚 */
+const hasTranslation = altPath != null;
+const switchHref = altPath ?? localizePath(otherLang, '/');
+
+/**
+ * 只有中英两版都存在时才互相声明 hreflang。单向声明会被搜索引擎判为无效，
+ * 反而不如不写；x-default 指向中文，因为中文是原文。
+ */
+const alternates = hasTranslation
+  ? [
+      { hreflang: HTML_LANG[lang], href: canonical.href },
+      { hreflang: HTML_LANG[otherLang], href: new URL(altPath!, base).href },
+      { hreflang: 'x-default', href: new URL(lang === 'zh' ? pathname : altPath!, base).href }
+    ]
+  : [];
+
+const rssPath = localizePath(lang, '/rss.xml');
+
 // owns：这一项还负责哪些路由。文章页、归档页、标签页都属于「文章」。
 const navItems = [
-  { href: '/', zh: '文章', en: 'Posts', owns: ['/posts/', '/tags/'] },
+  { href: localizePath(lang, '/'), label: t(lang, 'nav.posts'), owns: ['/posts/', '/tags/'] },
   // 「项目」暂时撤下：可展示的项目都还没有公开的仓库或详情页，
   // 页面在 src/pages/_projects.astro，等有东西可放了再挂回来。
-  { href: '/about/', zh: '关于', en: 'About', owns: [] }
+  { href: localizePath(lang, '/about/'), label: t(lang, 'nav.about'), owns: [] }
 ];
 
+const home = localizePath(lang, '/');
 const isActive = (item: (typeof navItems)[number]) =>
-  (item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)) ||
-  item.owns.some((prefix) => pathname.startsWith(prefix));
+  (item.href === home ? pathname === home : pathname.startsWith(item.href)) ||
+  item.owns.some((prefix) => pathname.startsWith(localizePath(lang, prefix)));
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={HTML_LANG[lang]}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description} />
+    <meta name="description" content={pageDescription} />
     <meta name="color-scheme" content="dark light" />
     {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonical.href} />
+    {alternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href={rssPath} />
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:locale" content={OG_LOCALE[lang]} />
+    {hasTranslation && <meta property="og:locale:alternate" content={OG_LOCALE[otherLang]} />}
     <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={pageDescription} />
     <meta property="og:url" content={canonical.href} />
     {ogImage && <meta property="og:image" content={ogImage.href} />}
     {ogType === 'article' && publishedTime && (
@@ -74,36 +111,34 @@ const isActive = (item: (typeof navItems)[number]) =>
 
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
     <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={pageDescription} />
     {ogImage && <meta name="twitter:image" content={ogImage.href} />}
 
     <script is:inline>
       try {
         const theme = localStorage.getItem('wiki-theme');
         if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
-        // 只切界面语言：文章标题和正文始终是中文，所以 <html lang> 不动
-        const language = localStorage.getItem('wiki-language') === 'en' ? 'en' : 'zh';
-        document.documentElement.dataset.lang = language;
       } catch {}
     </script>
     <title>{pageTitle}</title>
   </head>
   <body>
-    <a class="skip-link" href="#main-content" data-i18n data-zh="跳到正文" data-en="Skip to content">跳到正文</a>
+    <a class="skip-link" href="#main-content">{t(lang, 'skip')}</a>
     <header class="site-header">
       <div class="shell site-header__inner">
-        <a class="site-logo" href="/" aria-label={`${SITE.name} 首页`}>
-          <span>{SITE.logo}</span>
+        <a class="site-logo" href={home} aria-label={`${SITE.name} ${t(lang, 'home.aria')}`}>
+          <span class="site-logo__mark" aria-hidden="true">❖</span>
+          <span class="site-logo__text">{SITE.logo}</span>
         </a>
         <div class="site-header__right">
-          <nav aria-label="主导航">
+          <nav aria-label={t(lang, 'nav.aria')}>
             <ul>
               {navItems.map((item) => (
-                <li><a href={item.href} aria-current={isActive(item) ? 'page' : undefined} data-i18n data-zh={item.zh} data-en={item.en}>{item.zh}</a></li>
+                <li><a href={item.href} aria-current={isActive(item) ? 'page' : undefined}>{item.label}</a></li>
               ))}
             </ul>
           </nav>
-          <SiteControls />
+          <SiteControls lang={lang} switchHref={switchHref} />
         </div>
       </div>
     </header>
@@ -114,8 +149,11 @@ const isActive = (item: (typeof navItems)[number]) =>
 
     <footer class="site-footer">
       <div class="shell site-footer__inner">
-        <p>© {new Date().getFullYear()} {SITE.author}. <span data-i18n data-zh="保持好奇，持续折腾。" data-en="Stay curious. Keep building.">保持好奇，持续折腾。</span></p>
-        {LINKS.github && <p><a href={LINKS.github}>GitHub</a></p>}
+        <p>© {new Date().getFullYear()} {SITE.author} <span class="site-footer__sep" aria-hidden="true">/</span> <span>{t(lang, 'footer.tagline')}</span></p>
+        <div class="site-footer__links">
+          {LINKS.github && <a href={LINKS.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
+          <a href={rssPath}>RSS ↗</a>
+        </div>
       </div>
     </footer>
   </body>

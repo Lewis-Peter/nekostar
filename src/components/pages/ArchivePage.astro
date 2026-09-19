@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { byNewest, formatMonthDay, postPath, publishedIn, type Post } from '../../lib/posts';
+import { localizePath, postCount, t, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const posts = (await getCollection('posts', publishedIn(lang))).sort(byNewest);
+
+const byYear = new Map<number, Post[]>();
+for (const post of posts) {
+  const year = post.data.date.getFullYear();
+  byYear.set(year, [...(byYear.get(year) ?? []), post]);
+}
+const years = [...byYear].sort((a, b) => b[0] - a[0]);
+---
+
+<BaseLayout
+  lang={lang}
+  title={t(lang, 'archive.title')}
+  description={t(lang, 'archive.description')}
+  altPath={localizePath(lang === 'zh' ? 'en' : 'zh', '/posts/')}
+>
+  <div class="shell listing-page">
+    <a class="back-link" href={localizePath(lang, '/')}>← <span>{t(lang, 'back.home')}</span></a>
+    <div class="section-heading listing-page__heading">
+      <h1>{t(lang, 'archive.title')}</h1>
+      <span>{postCount(lang, posts.length)}</span>
+    </div>
+    {years.map(([year, items]) => (
+      <section class="archive-year" aria-label={`${year}`}>
+        <h2 class="archive-year__label">{year}</h2>
+        <ol class="archive-list">
+          {items.map((post) => (
+            <li>
+              <a href={postPath(post)}>
+                <time class="archive-list__date" datetime={post.data.date.toISOString()}>{formatMonthDay(post.data.date)}</time>
+                <span class="archive-list__title">{post.data.title}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
+    {posts.length === 0 && <p class="empty-note">{t(lang, 'archive.empty')}</p>}
+  </div>
+</BaseLayout>

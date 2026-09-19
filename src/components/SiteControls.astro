@@ -1,40 +1,67 @@
 ---
 import { GISCUS_THEME_URLS } from '../site.config';
+import { t, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  /** 另一语言的同一页面地址，由 BaseLayout 算好 */
+  switchHref: string;
+}
+
+const { lang, switchHref } = Astro.props;
+
+// 主题按钮的文案在客户端切换时也要更新，所以整组交给脚本，不走服务端 t()
+const themeCopy = {
+  labels: {
+    system: t(lang, 'controls.theme.system'),
+    light: t(lang, 'controls.theme.light'),
+    dark: t(lang, 'controls.theme.dark')
+  },
+  prefix: t(lang, 'controls.theme.prefix'),
+  separator: lang === 'zh' ? '：' : ': '
+};
 ---
 
-<div class="site-controls" role="group" aria-label="显示偏好" data-giscus-theme-urls={JSON.stringify(GISCUS_THEME_URLS)}>
-  <button class="preference-control" type="button" data-theme-toggle aria-label="颜色模式：跟随系统" title="颜色模式：跟随系统">
+<div
+  class="site-controls"
+  role="group"
+  aria-label={t(lang, 'controls.aria')}
+  data-giscus-theme-urls={JSON.stringify(GISCUS_THEME_URLS)}
+  data-theme-copy={JSON.stringify(themeCopy)}
+>
+  <button
+    class="preference-control"
+    type="button"
+    data-theme-toggle
+    aria-label={`${themeCopy.prefix}${themeCopy.separator}${themeCopy.labels.system}`}
+    title={`${themeCopy.prefix}${themeCopy.separator}${themeCopy.labels.system}`}
+  >
     <span class="preference-control__icon" data-theme-icon aria-hidden="true">◐</span>
-    <span data-theme-label>自动</span>
+    <span data-theme-label>{themeCopy.labels.system}</span>
   </button>
-  <button class="preference-control preference-control--language" type="button" data-language-toggle aria-label="Switch to English" title="Switch to English">
-    <span data-language-label>EN</span>
-  </button>
+  {/* 语言切换是真的换页面：两种语言各有一套构建好的 HTML，
+      靠 JS 就地改文案的话，搜索引擎和不执行脚本的读者都拿不到英文内容。 */}
+  <a
+    class="preference-control preference-control--language"
+    href={switchHref}
+    hreflang={lang === 'zh' ? 'en' : 'zh-CN'}
+    aria-label={t(lang, 'controls.language.action')}
+    title={t(lang, 'controls.language.action')}
+  >
+    <span>{t(lang, 'controls.language.label')}</span>
+  </a>
 </div>
 
 <script is:inline>
   (() => {
     const root = document.documentElement;
-    const themeButton = document.querySelector('[data-theme-toggle]');
-    const languageButton = document.querySelector('[data-language-toggle]');
-    if (!(themeButton instanceof HTMLButtonElement) || !(languageButton instanceof HTMLButtonElement)) return;
+    const controls = document.querySelector('.site-controls');
+    const themeButton = controls?.querySelector('[data-theme-toggle]');
+    if (!(themeButton instanceof HTMLButtonElement)) return;
 
     const themeOrder = ['system', 'light', 'dark'];
     const themeIcons = { system: '◐', light: '☼', dark: '☾' };
-    const copy = {
-      zh: {
-        themes: { system: '自动', light: '浅色', dark: '深色' },
-        themePrefix: '颜色模式',
-        languageAction: 'Switch to English',
-        languageButton: 'EN'
-      },
-      en: {
-        themes: { system: 'System', light: 'Light', dark: 'Dark' },
-        themePrefix: 'Color mode',
-        languageAction: '切换到中文',
-        languageButton: '中'
-      }
-    };
+    const copy = JSON.parse(controls.dataset.themeCopy);
 
     const readTheme = () => {
       try {
@@ -45,9 +72,7 @@ import { GISCUS_THEME_URLS } from '../site.config';
       }
     };
 
-    const readLanguage = () => root.dataset.lang === 'en' ? 'en' : 'zh';
-
-    const themeUrls = JSON.parse(themeButton.closest('.site-controls').dataset.giscusThemeUrls);
+    const themeUrls = JSON.parse(controls.dataset.giscusThemeUrls);
     const giscusThemeUrl = (theme) => themeUrls[theme] ?? themeUrls.system;
 
     // 由 Giscus.astro 提供，内部会处理 iframe 尚未就绪时的排队。
@@ -61,9 +86,8 @@ import { GISCUS_THEME_URLS } from '../site.config';
         try { localStorage.setItem('wiki-theme', theme); } catch {}
       }
 
-      const language = readLanguage();
-      const label = copy[language].themes[theme];
-      const accessibleLabel = `${copy[language].themePrefix}：${label}`;
+      const label = copy.labels[theme];
+      const accessibleLabel = `${copy.prefix}${copy.separator}${label}`;
       const icon = themeButton.querySelector('[data-theme-icon]');
       const text = themeButton.querySelector('[data-theme-label]');
       if (icon) icon.textContent = themeIcons[theme];
@@ -73,44 +97,13 @@ import { GISCUS_THEME_URLS } from '../site.config';
       updateGiscus({ theme: giscusThemeUrl(theme) });
     };
 
-    const applyLanguage = (language, persist = true) => {
-      // 这是界面语言，不是文档语言：文章标题、摘要、正文始终是中文，
-      // 所以 <html lang> 保持 zh-CN，只给翻译过的 UI 元素单独标 lang。
-      root.dataset.lang = language;
-      if (persist) {
-        try { localStorage.setItem('wiki-language', language); } catch {}
-      }
-
-      document.querySelectorAll('[data-i18n]').forEach((element) => {
-        const value = element.getAttribute(`data-${language}`);
-        if (value === null) return;
-        element.textContent = value;
-        element.lang = language === 'en' ? 'en' : 'zh-CN';
-      });
-      document.querySelectorAll('[data-localized-date]').forEach((element) => {
-        const value = element.getAttribute('datetime');
-        if (!value) return;
-        const date = new Date(value);
-        element.textContent = new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'zh-CN', {
-          year: 'numeric', month: 'long', day: 'numeric'
-        }).format(date);
-      });
-
-      languageButton.querySelector('[data-language-label]').textContent = copy[language].languageButton;
-      languageButton.setAttribute('aria-label', copy[language].languageAction);
-      languageButton.title = copy[language].languageAction;
-      applyTheme(readTheme(), false);
-      updateGiscus({ lang: language === 'en' ? 'en' : 'zh-CN' });
-    };
-
     themeButton.addEventListener('click', () => {
       const current = readTheme();
       applyTheme(themeOrder[(themeOrder.indexOf(current) + 1) % themeOrder.length]);
     });
-    languageButton.addEventListener('click', () => applyLanguage(readLanguage() === 'zh' ? 'en' : 'zh'));
 
-    const initialize = () => applyLanguage(readLanguage(), false);
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize, { once: true });
-    else initialize();
+    // 首屏那段内联脚本只负责把 data-theme 提前打上（避免闪白），
+    // 按钮文案还停在服务端渲染的「自动」，这里补一次同步。
+    applyTheme(readTheme(), false);
   })();
 </script>

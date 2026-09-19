@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE, LINKS } from '../../site.config';
+import { localizePath, t, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const contacts = [
+  { label: 'GitHub', href: LINKS.github },
+  { label: 'Email', href: LINKS.email ? `mailto:${LINKS.email}` : null }
+].filter((item) => item.href !== null);
+---
+
+<BaseLayout
+  lang={lang}
+  title={t(lang, 'about.title')}
+  description={t(lang, 'about.description')}
+  altPath={localizePath(lang === 'zh' ? 'en' : 'zh', '/about/')}
+>
+  <div class="shell about-page">
+    <section class="about-main">
+      <p class="eyebrow">ABOUT</p>
+      <h1>{t(lang, 'about.heading')}</h1>
+      <p class="about-lead">{t(lang, 'about.lead')}</p>
+      <div class="prose">
+        <h2>{t(lang, 'about.workshopHeading')}</h2>
+        <p>{t(lang, 'about.workshopBody')}</p>
+        <h2>{t(lang, 'about.contactHeading')}</h2>
+        <p>{t(lang, 'about.contactBody')}</p>
+      </div>
+    </section>
+    <aside class="about-card">
+      <div class="avatar-placeholder" aria-hidden="true">{SITE.author.slice(0, 1)}</div>
+      <dl>
+        <div><dt>{t(lang, 'about.based')}</dt><dd>China</dd></div>
+        <div><dt>{t(lang, 'about.focus')}</dt><dd>Hardware / Kernel / Security</dd></div>
+        <div><dt>{t(lang, 'about.status')}</dt><dd><span class="online-dot"></span> <span>{t(lang, 'about.statusValue')}</span></dd></div>
+      </dl>
+      {contacts.length > 0 && (
+        <div class="about-links">
+          {contacts.map((item) => <a href={item.href}>{item.label} ↗</a>)}
+        </div>
+      )}
+    </aside>
+  </div>
+</BaseLayout>

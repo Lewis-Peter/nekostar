@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../PostCard.astro';
+import { byNewest, publishedIn } from '../../lib/posts';
+import { SITE } from '../../site.config';
+import { localizePath, t, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  tag: string;
+}
+
+const { lang, tag } = Astro.props;
+const posts = (await getCollection('posts', (post) => publishedIn(lang)(post) && post.data.tags.includes(tag))).sort(byNewest);
+
+const title = lang === 'zh' ? `标签：${tag}` : `Tag: ${tag}`;
+const description = lang === 'zh' ? `所有带有 ${tag} 标签的文章` : `All posts tagged ${tag}`;
+const count = lang === 'zh' ? `${posts.length} 篇文章` : `${posts.length} ${posts.length === 1 ? 'post' : 'posts'}`;
+---
+
+{/* 标签本身就是各语言各写各的（中文文章用中文标签），两边的标签集合对不上，
+    所以标签页不声明 hreflang——altPath 传 null，语言按钮退回该语言首页。 */}
+<BaseLayout lang={lang} title={title} description={description} noindex={!SITE.indexTagPages} altPath={null}>
+  <div class="shell listing-page">
+    <a class="back-link" href={localizePath(lang, '/posts/')}>← <span>{t(lang, 'back.allPosts')}</span></a>
+    <div class="section-heading listing-page__heading">
+      <h1><span>{t(lang, 'tag.label')}</span>{lang === 'zh' ? '：' : ': '}<span>{tag}</span></h1>
+      <span>{count}</span>
+    </div>
+    <div class="post-list">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </div>
+</BaseLayout>

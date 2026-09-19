@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content';
+import TagPage from '../../../components/pages/TagPage.astro';
+import { publishedIn } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', publishedIn('en'));
+  const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+  return tags.map((tag) => ({ params: { tag }, props: { tag } }));
+}
+
+const { tag } = Astro.props;
+---
+
+<TagPage lang="en" tag={tag} />

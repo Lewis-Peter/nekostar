@@ -1,13 +1,24 @@
 ---
 import { GISCUS, GISCUS_THEME_URLS, giscusThemeUrl } from '../site.config';
+import { t, DEFAULT_LANG, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = DEFAULT_LANG } = Astro.props;
 
 // 四项缺一不可，少任何一项 giscus 都会拿到无效配置
 const configured = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.category && GISCUS.categoryId);
+
+// mapping 仍然是 pathname，所以中英两版各有各的讨论帖。换成 specific + slug
+// 能让两版共用一个帖子，但会把中文版已有的评论甩掉，不值当。
+const giscusLang = lang === 'en' ? 'en' : 'zh-CN';
 ---
 
-<section class="comments" aria-labelledby="comments-title" data-giscus-theme-urls={JSON.stringify(GISCUS_THEME_URLS)}>
-  <h2 id="comments-title" data-i18n data-zh="讨论" data-en="Discussion">讨论</h2>
-  <p class="comments__hint" data-i18n data-zh="欢迎补充、勘误或分享你的实践经验。" data-en="Corrections, additions, and field notes are always welcome.">欢迎补充、勘误或分享你的实践经验。</p>
+<section class="comments" aria-labelledby="comments-title" data-giscus-theme-urls={JSON.stringify(GISCUS_THEME_URLS)} data-giscus-lang={giscusLang}>
+  <h2 id="comments-title">{t(lang, 'comments.title')}</h2>
+  <p class="comments__hint">{t(lang, 'comments.hint')}</p>
   {configured && (
   <script
     is:inline
@@ -22,7 +33,7 @@ const configured = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.category && GI
     data-emit-metadata="0"
     data-input-position="top"
     data-theme={giscusThemeUrl('system')}
-    data-lang="zh-CN"
+    data-lang={giscusLang}
     data-loading="lazy"
     crossorigin="anonymous"
     async
@@ -66,13 +77,13 @@ const configured = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.category && GI
       // 自定义主题由 giscus 的 iframe 从公网 HTTPS 地址加载；astro dev 的 localhost
       // 对它不可达，因而本地评论区退回无主题样式是预期行为。
       window.__giscusSetConfig({
-        lang: root.dataset.lang === 'en' ? 'en' : 'zh-CN',
+        lang: section.dataset.giscusLang,
         theme: themeUrl(root.dataset.theme)
       });
     })();
   </script>
   )}
   {!configured && (
-    <p class="comments__pending" data-pending data-i18n data-zh="评论区还没配置（见 src/site.config.ts 的 GISCUS）。" data-en="Comments are not configured yet (see GISCUS in src/site.config.ts).">评论区还没配置（见 src/site.config.ts 的 GISCUS）。</p>
+    <p class="comments__pending" data-pending>{t(lang, 'comments.pending')}</p>
   )}
 </section>

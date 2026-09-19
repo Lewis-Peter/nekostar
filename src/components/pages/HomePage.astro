@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../PostCard.astro';
+import { byNewest, publishedIn } from '../../lib/posts';
+import { SITE } from '../../site.config';
+import { localizePath, postCount, t, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const allPosts = (await getCollection('posts', publishedIn(lang))).sort(byNewest);
+const posts = allPosts.slice(0, 10);
+
+const tagCounts = new Map<string, number>();
+for (const post of allPosts) {
+  for (const tag of post.data.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+}
+const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+const archiveHref = localizePath(lang, '/posts/');
+const viewAll = lang === 'zh'
+  ? `查看全部 ${allPosts.length} 篇 →`
+  : `View all ${allPosts.length} posts →`;
+const browseAll = lang === 'zh'
+  ? `按时间浏览全部 ${allPosts.length} 篇 →`
+  : `Browse all ${allPosts.length} posts by date →`;
+---
+
+<BaseLayout lang={lang} altPath={localizePath(lang === 'zh' ? 'en' : 'zh', '/')}>
+  <section class="hero shell">
+    <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true">●</span> HARDWARE · SECURITY · LINUX KERNEL</p>
+    <h1>{SITE.name}</h1>
+    <p class="hero__intro">{t(lang, 'home.intro')}</p>
+  </section>
+
+  <div class="shell home-grid">
+    <section aria-labelledby="recent-posts">
+      <div class="section-heading">
+        <h2 id="recent-posts">{t(lang, 'home.recent')}</h2>
+        <span>{postCount(lang, posts.length)}</span>
+      </div>
+      <div class="post-list">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+      {/* 一篇都没有时，标题底下直接空白会像是页面坏了；给一句话把它坐实成「还没开始写」。 */}
+      {posts.length === 0 && <p class="empty-note">{t(lang, 'home.empty')}</p>}
+      {allPosts.length > posts.length && (
+        <a class="post-list__more" href={archiveHref}>{viewAll}</a>
+      )}
+    </section>
+    <aside class="home-sidebar">
+      <div class="sidebar-note">
+        <span class="sidebar-note__label">{t(lang, 'home.focus')}</span>
+        <p>{t(lang, 'home.focusValue')}</p>
+      </div>
+      {tags.length > 0 && (
+        <div class="sidebar-note">
+          <span class="sidebar-note__label">{t(lang, 'home.tags')}</span>
+          <ul class="tag-list sidebar-tags">
+            {tags.map(([tag, count]) => (
+              <li>
+                <a href={localizePath(lang, `/tags/${encodeURIComponent(tag)}/`)}>{tag}<span class="sidebar-tags__count">{count}</span></a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div class="sidebar-note">
+        <span class="sidebar-note__label">{t(lang, 'home.archive')}</span>
+        <p>
+          {/* 没有文章时不报数：「全部 0 篇」比不写还难看。 */}
+          <a href={archiveHref}>{allPosts.length > 0 ? browseAll : t(lang, 'home.archiveEmpty')}</a>
+        </p>
+      </div>
+      <div class="sidebar-note">
+        <span class="sidebar-note__label">{t(lang, 'home.subscribe')}</span>
+        <p>
+          <a href={localizePath(lang, '/rss.xml')}>{t(lang, 'home.rss')}</a>
+        </p>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

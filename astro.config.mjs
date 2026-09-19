@@ -12,20 +12,28 @@ import { codeThemeLight, codeThemeDark } from './src/lib/code-theme';
  * 这里没法用 getCollection——那是运行时 API，配置文件阶段还没有 Astro 上下文，
  * 所以直接读文件抠 frontmatter。只认 date 和 draft 两个字段，够用且不会因为
  * schema 以后加字段而失效。
+ *
+ * 文章按语言分在 posts/zh 和 posts/en 两个子目录里，中文在站点根、英文在 /en/
+ * 下面，路径映射规则和 src/lib/i18n.ts 的 localizePath 保持一致。
  */
 function postLastmod() {
-  const dir = './src/content/posts';
+  const root = './src/content/posts';
   const dates = new Map();
-  for (const file of fs.readdirSync(dir)) {
-    if (!/\.mdx?$/.test(file)) continue;
-    const frontmatter = fs.readFileSync(path.join(dir, file), 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/);
-    if (!frontmatter) continue;
-    const [, fm] = frontmatter;
-    if (/^draft:\s*true\s*$/m.test(fm)) continue;
-    const raw = fm.match(/^date:\s*(.+)$/m)?.[1].trim().replace(/^["']|["']$/g, '');
-    const date = raw && new Date(raw);
-    if (!date || Number.isNaN(date.valueOf())) continue;
-    dates.set(`/posts/${file.replace(/\.mdx?$/, '')}/`, date);
+  for (const lang of ['zh', 'en']) {
+    const dir = path.join(root, lang);
+    if (!fs.existsSync(dir)) continue;
+    const prefix = lang === 'zh' ? '' : '/en';
+    for (const file of fs.readdirSync(dir)) {
+      if (!/\.mdx?$/.test(file)) continue;
+      const frontmatter = fs.readFileSync(path.join(dir, file), 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      if (!frontmatter) continue;
+      const [, fm] = frontmatter;
+      if (/^draft:\s*true\s*$/m.test(fm)) continue;
+      const raw = fm.match(/^date:\s*(.+)$/m)?.[1].trim().replace(/^["']|["']$/g, '');
+      const date = raw && new Date(raw);
+      if (!date || Number.isNaN(date.valueOf())) continue;
+      dates.set(`${prefix}/posts/${file.replace(/\.mdx?$/, '')}/`, date);
+    }
   }
   return dates;
 }
@@ -46,9 +54,14 @@ function placeholderReport() {
 }
 
 const lastmodByPath = postLastmod();
-const newestPost = [...lastmodByPath.values()].sort((a, b) => b - a)[0] ?? null;
+/** 各语言首页/归档页跟自己那边最新的一篇走，中文更新了不该带动英文的 lastmod */
+const newestByPrefix = new Map();
+for (const [pathname, date] of lastmodByPath) {
+  const prefix = pathname.startsWith('/en/') ? '/en' : '';
+  if (!(newestByPrefix.get(prefix) >= date)) newestByPrefix.set(prefix, date);
+}
 /** 这些页面的内容由文章列表决定，最后修改时间跟着最新一篇走 */
-const LISTING_PATHS = new Set(['/', '/posts/']);
+const LISTING_PATHS = new Set(['/', '/posts/', '/en/', '/en/posts/']);
 
 export default defineConfig({
   site: SITE.origin,
@@ -56,11 +69,15 @@ export default defineConfig({
     mdx(),
     sitemap({
       // 标签页默认不进 sitemap，和页面上的 noindex 共用 SITE.indexTagPages 这一个开关
-      filter: (page) => SITE.indexTagPages || !new URL(page).pathname.startsWith('/tags/'),
+      filter: (page) => {
+        const pathname = new URL(page).pathname;
+        return SITE.indexTagPages || !/^(\/en)?\/tags\//.test(pathname);
+      },
       serialize(item) {
         const pathname = new URL(item.url).pathname;
         // 首页和归档页跟着最新一篇文章走；文章页用自己的发布日期
-        const lastmod = lastmodByPath.get(pathname) ?? (LISTING_PATHS.has(pathname) ? newestPost : null);
+        const lastmod = lastmodByPath.get(pathname)
+          ?? (LISTING_PATHS.has(pathname) ? newestByPrefix.get(pathname.startsWith('/en') ? '/en' : '') ?? null : null);
         if (lastmod) item.lastmod = lastmod.toISOString();
         return item;
       }

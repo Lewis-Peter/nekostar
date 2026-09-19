@@ -9,6 +9,10 @@ import { API_SERVICE } from '../site.config';
 const site = API_SERVICE.site;
 ---
 
+{/* 注意：这个页面还停用着（文件名带下划线，不参与构建）。里面的 data-i18n
+    双语切换机制已经随双语改造一起废弃了，恢复这个页面时要改成 t(lang, ...)，
+    并且中英各挂一份路由，参见 src/lib/i18n.ts。 */}
+
 <BaseLayout title="AI API" description="一个朋友在运营的 AI API 中转站，附利益披露。">
   <div class="shell listing-page tool-page">
     <p class="eyebrow">AI API</p>

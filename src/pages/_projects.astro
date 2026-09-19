@@ -23,6 +23,10 @@ type Project = {
 const projects: Project[] = [];
 ---
 
+{/* 注意：这个页面还停用着（文件名带下划线，不参与构建）。里面的 data-i18n
+    双语切换机制已经随双语改造一起废弃了，恢复这个页面时要改成 t(lang, ...)，
+    并且中英各挂一份路由，参见 src/lib/i18n.ts。 */}
+
 <BaseLayout title="项目" description="硬件、安全和 Linux 内核相关项目。">
   <div class="shell page-intro">
     <p class="eyebrow">PROJECTS</p>
